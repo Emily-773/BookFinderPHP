@@ -2,29 +2,26 @@ const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const results = document.getElementById("results");
 const suggestions = document.getElementById("suggestions");
+const darkModeToggle = document.getElementById("darkModeToggle");
 
 const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
-
-let currentController = null;
-let suggestionIndex = -1;
-let currentSuggestions = [];
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
 const FAVOURITES_KEY = "bookfinder_favourites";
 const HISTORY_KEY = "bookfinder_history";
-const darkModeToggle = document.getElementById("darkModeToggle");
 const THEME_KEY = "bookfinder_theme";
 
-// Event listeners
+let currentController = null;
+let suggestionIndex = -1;
+
+/* -------------------------
+   Event listeners
+-------------------------- */
 searchBtn.addEventListener("click", searchBooks);
 
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    searchBooks();
-  }
-});
-
+/* -------------------------
+   Dark mode
+-------------------------- */
 function applySavedTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY);
 
@@ -48,6 +45,9 @@ function toggleDarkMode() {
   }
 }
 
+/* -------------------------
+   Suggestions
+-------------------------- */
 function debounce(fn, delay = 300) {
   let timeout;
   return (...args) => {
@@ -73,13 +73,14 @@ async function fetchSuggestions(query) {
     const data = await response.json();
     const items = data.items || [];
 
-    const titles = [...new Set(
-      items
-        .map(item => item.volumeInfo?.title)
-        .filter(Boolean)
-    )];
+    const titles = [
+      ...new Set(
+        items
+          .map((item) => item.volumeInfo?.title)
+          .filter(Boolean)
+      )
+    ];
 
-    currentSuggestions = titles;
     renderSuggestions(titles);
   } catch (error) {
     console.error("Suggestion fetch failed:", error);
@@ -98,10 +99,13 @@ function renderSuggestions(items) {
     return;
   }
 
-  items.forEach((item) => {
+  items.forEach((item, index) => {
     const div = document.createElement("div");
     div.className = "suggestion-item";
     div.textContent = item;
+    div.setAttribute("role", "option");
+    div.setAttribute("tabindex", "-1");
+    div.dataset.index = index;
 
     div.addEventListener("click", () => {
       searchInput.value = item;
@@ -120,7 +124,6 @@ function hideSuggestions() {
   suggestions.style.display = "none";
   suggestions.innerHTML = "";
   suggestionIndex = -1;
-  currentSuggestions = [];
 }
 
 function updateSuggestionHighlight(items) {
@@ -129,8 +132,9 @@ function updateSuggestionHighlight(items) {
   });
 }
 
-
-// Initialise extras when page loads
+/* -------------------------
+   Initialise on page load
+-------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderHistory();
   renderFavourites();
@@ -151,20 +155,32 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("keydown", (e) => {
     const items = suggestions ? suggestions.querySelectorAll(".suggestion-item") : [];
 
-    if (!items.length) return;
+    if (items.length) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        suggestionIndex = (suggestionIndex + 1) % items.length;
+        updateSuggestionHighlight(items);
+        return;
+      }
 
-    if (e.key === "ArrowDown") {
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        suggestionIndex = (suggestionIndex - 1 + items.length) % items.length;
+        updateSuggestionHighlight(items);
+        return;
+      }
+
+      if (e.key === "Enter" && suggestionIndex >= 0) {
+        e.preventDefault();
+        searchInput.value = items[suggestionIndex].textContent;
+        hideSuggestions();
+        searchBooks();
+        return;
+      }
+    }
+
+    if (e.key === "Enter") {
       e.preventDefault();
-      suggestionIndex = (suggestionIndex + 1) % items.length;
-      updateSuggestionHighlight(items);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      suggestionIndex = (suggestionIndex - 1 + items.length) % items.length;
-      updateSuggestionHighlight(items);
-    } else if (e.key === "Enter" && suggestionIndex >= 0) {
-      e.preventDefault();
-      searchInput.value = items[suggestionIndex].textContent;
-      hideSuggestions();
       searchBooks();
     } else if (e.key === "Escape") {
       hideSuggestions();
@@ -178,9 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// -------------------------
-// Search
-// -------------------------
+/* -------------------------
+   Search
+-------------------------- */
 async function searchBooks() {
   const query = searchInput.value.trim();
   hideSuggestions();
@@ -191,7 +207,7 @@ async function searchBooks() {
     return;
   }
 
-  if (!API_KEY || API_KEY === "HIDDEN KEY WILL ADD") {
+  if (!API_KEY || API_KEY === "HIDDEN KEY WILL ADD" || API_KEY === "YOUR_API_KEY_HERE") {
     showMessage("Please add your Google Books API key first.");
     return;
   }
@@ -230,9 +246,9 @@ async function searchBooks() {
   }
 }
 
-// -------------------------
-// Display books
-// -------------------------
+/* -------------------------
+   Display books
+-------------------------- */
 function displayBooks(books) {
   results.innerHTML = "";
 
@@ -334,9 +350,9 @@ function displayBooks(books) {
   });
 }
 
-// -------------------------
-// Messages and loading
-// -------------------------
+/* -------------------------
+   Messages and loading
+-------------------------- */
 function showMessage(message) {
   results.innerHTML = `<p class="text-center">${message}</p>`;
 }
@@ -355,9 +371,9 @@ function setLoading(isLoading) {
   searchBtn.textContent = isLoading ? "Searching..." : "Search";
 }
 
-// -------------------------
-// Favourites
-// -------------------------
+/* -------------------------
+   Favourites
+-------------------------- */
 function getFavourites() {
   return JSON.parse(localStorage.getItem(FAVOURITES_KEY)) || [];
 }
@@ -412,9 +428,9 @@ function renderFavourites() {
   });
 }
 
-// -------------------------
-// Search history
-// -------------------------
+/* -------------------------
+   Search history
+-------------------------- */
 function getHistory() {
   return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
 }
@@ -461,9 +477,9 @@ function renderHistory() {
   });
 }
 
-// -------------------------
-// Book details
-// -------------------------
+/* -------------------------
+   Book details
+-------------------------- */
 function showBookDetails(book) {
   let modal = document.getElementById("bookDetailsModal");
 
