@@ -295,3 +295,23 @@ body.dark-mode .suggestion-item {
   body.dark-mode .suggestion-item.active {
     background-color: #333;
   }
+
+/* -------------------------
+   Auth Pages
+-------------------------- */
+.auth-box {
+  max-width: 450px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .auth-box {
+  background: #1e1e1e;
+  color: #f1f1f1;
+}
+
+  body.dark-mode .auth-box a {
+    color: #9ecbff;
+  }

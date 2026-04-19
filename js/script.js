@@ -4,12 +4,18 @@ const results = document.getElementById("results");
 const suggestions = document.getElementById("suggestions");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
+const userGreeting = document.getElementById("userGreeting");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginLink = document.getElementById("loginLink");
+const signupLink = document.getElementById("signupLink");
+
 const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
 const FAVOURITES_KEY = "bookfinder_favourites";
 const HISTORY_KEY = "bookfinder_history";
 const THEME_KEY = "bookfinder_theme";
+const CURRENT_USER_KEY = "bookfinder_current_user";
 
 let currentController = null;
 let suggestionIndex = -1;
@@ -17,7 +23,9 @@ let suggestionIndex = -1;
 /* -------------------------
    Event listeners
 -------------------------- */
-searchBtn.addEventListener("click", searchBooks);
+if (searchBtn) {
+  searchBtn.addEventListener("click", searchBooks);
+}
 
 /* -------------------------
    Dark mode
@@ -46,6 +54,25 @@ function toggleDarkMode() {
 }
 
 /* -------------------------
+   User auth UI
+-------------------------- */
+function updateUserUI() {
+  const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+
+  if (currentUser && userGreeting && logoutBtn && loginLink && signupLink) {
+    userGreeting.textContent = `Hi, ${currentUser.name}`;
+    logoutBtn.style.display = "inline-block";
+    loginLink.style.display = "none";
+    signupLink.style.display = "none";
+  } else if (userGreeting && logoutBtn && loginLink && signupLink) {
+    userGreeting.textContent = "";
+    logoutBtn.style.display = "none";
+    loginLink.style.display = "inline-block";
+    signupLink.style.display = "inline-block";
+  }
+}
+
+/* -------------------------
    Suggestions
 -------------------------- */
 function debounce(fn, delay = 300) {
@@ -57,6 +84,8 @@ function debounce(fn, delay = 300) {
 }
 
 async function fetchSuggestions(query) {
+  if (!suggestions) return;
+
   if (!query || query.length < 2) {
     hideSuggestions();
     return;
@@ -108,7 +137,9 @@ function renderSuggestions(items) {
     div.dataset.index = index;
 
     div.addEventListener("click", () => {
-      searchInput.value = item;
+      if (searchInput) {
+        searchInput.value = item;
+      }
       hideSuggestions();
       searchBooks();
     });
@@ -139,56 +170,66 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHistory();
   renderFavourites();
   applySavedTheme();
+  updateUserUI();
 
   if (darkModeToggle) {
     darkModeToggle.addEventListener("click", toggleDarkMode);
   }
 
-  const debouncedSuggestions = debounce((value) => {
-    fetchSuggestions(value);
-  }, 300);
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem(CURRENT_USER_KEY);
+      updateUserUI();
+    });
+  }
 
-  searchInput.addEventListener("input", () => {
-    debouncedSuggestions(searchInput.value.trim());
-  });
+  if (searchInput) {
+    const debouncedSuggestions = debounce((value) => {
+      fetchSuggestions(value);
+    }, 300);
 
-  searchInput.addEventListener("keydown", (e) => {
-    const items = suggestions ? suggestions.querySelectorAll(".suggestion-item") : [];
+    searchInput.addEventListener("input", () => {
+      debouncedSuggestions(searchInput.value.trim());
+    });
 
-    if (items.length) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        suggestionIndex = (suggestionIndex + 1) % items.length;
-        updateSuggestionHighlight(items);
-        return;
+    searchInput.addEventListener("keydown", (e) => {
+      const items = suggestions ? suggestions.querySelectorAll(".suggestion-item") : [];
+
+      if (items.length) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          suggestionIndex = (suggestionIndex + 1) % items.length;
+          updateSuggestionHighlight(items);
+          return;
+        }
+
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          suggestionIndex = (suggestionIndex - 1 + items.length) % items.length;
+          updateSuggestionHighlight(items);
+          return;
+        }
+
+        if (e.key === "Enter" && suggestionIndex >= 0) {
+          e.preventDefault();
+          searchInput.value = items[suggestionIndex].textContent;
+          hideSuggestions();
+          searchBooks();
+          return;
+        }
       }
 
-      if (e.key === "ArrowUp") {
+      if (e.key === "Enter") {
         e.preventDefault();
-        suggestionIndex = (suggestionIndex - 1 + items.length) % items.length;
-        updateSuggestionHighlight(items);
-        return;
-      }
-
-      if (e.key === "Enter" && suggestionIndex >= 0) {
-        e.preventDefault();
-        searchInput.value = items[suggestionIndex].textContent;
-        hideSuggestions();
         searchBooks();
-        return;
+      } else if (e.key === "Escape") {
+        hideSuggestions();
       }
-    }
-
-    if (e.key === "Enter") {
-      e.preventDefault();
-      searchBooks();
-    } else if (e.key === "Escape") {
-      hideSuggestions();
-    }
-  });
+    });
+  }
 
   document.addEventListener("click", (e) => {
-    if (suggestions && !suggestions.contains(e.target) && e.target !== searchInput) {
+    if (suggestions && searchInput && !suggestions.contains(e.target) && e.target !== searchInput) {
       hideSuggestions();
     }
   });
@@ -198,6 +239,8 @@ document.addEventListener("DOMContentLoaded", () => {
    Search
 -------------------------- */
 async function searchBooks() {
+  if (!searchInput || !results) return;
+
   const query = searchInput.value.trim();
   hideSuggestions();
 
@@ -250,6 +293,8 @@ async function searchBooks() {
    Display books
 -------------------------- */
 function displayBooks(books) {
+  if (!results) return;
+
   results.innerHTML = "";
 
   if (!books.length) {
@@ -354,10 +399,13 @@ function displayBooks(books) {
    Messages and loading
 -------------------------- */
 function showMessage(message) {
+  if (!results) return;
   results.innerHTML = `<p class="text-center">${message}</p>`;
 }
 
 function showSpinner() {
+  if (!results) return;
+
   results.innerHTML = `
     <div class="text-center py-4">
       <div class="spinner-border" role="status" aria-hidden="true"></div>
@@ -367,6 +415,7 @@ function showSpinner() {
 }
 
 function setLoading(isLoading) {
+  if (!searchBtn) return;
   searchBtn.disabled = isLoading;
   searchBtn.textContent = isLoading ? "Searching..." : "Search";
 }
@@ -469,7 +518,9 @@ function renderHistory() {
     btn.className = "btn btn-sm btn-outline-secondary me-2 mb-2";
     btn.textContent = query;
     btn.addEventListener("click", () => {
-      searchInput.value = query;
+      if (searchInput) {
+        searchInput.value = query;
+      }
       searchBooks();
     });
 
