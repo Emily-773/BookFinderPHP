@@ -1,14 +1,20 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BookFinder</title>
+  <title>BookFinder Search</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
-
 <body>
 
   <nav class="navbar navbar-light bg-light">
@@ -16,12 +22,10 @@
       <span class="navbar-brand">📚 BookFinder</span>
 
       <div class="d-flex align-items-center gap-2">
-        <a href="login.html" id="loginLink" class="btn btn-outline-primary btn-sm">Login</a>
-        <a href="signup.html" id="signupLink" class="btn btn-outline-success btn-sm">Sign Up</a>
-        <span id="userGreeting" class="fw-semibold"></span>
-        <button id="logoutBtn" class="btn btn-outline-danger btn-sm" type="button" style="display: none;">
-          Logout
-        </button>
+        <span class="fw-semibold">Hi, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+        <a href="my-books.php" class="btn btn-outline-primary btn-sm">My Books</a>
+        <a href="index.php" class="btn btn-outline-secondary btn-sm">Home</a>
+        <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
       </div>
 
       <div class="d-flex align-items-start">
@@ -35,7 +39,7 @@
           <div id="suggestions" class="suggestions-dropdown" role="listbox" aria-label="Book suggestions"></div>
         </div>
 
-        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="searchBtn" class="btn btn-primary" type="button">Search</button>
         <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" type="button" aria-label="Toggle dark mode">
           🌙
         </button>
@@ -49,11 +53,6 @@
     <section class="mb-5">
       <h4>Recent Searches</h4>
       <div id="history" class="mt-2" aria-live="polite"></div>
-    </section>
-
-    <section class="mb-5">
-      <h4>Your Favourites</h4>
-      <div id="favourites" class="mt-2" aria-live="polite"></div>
     </section>
 
     <section>

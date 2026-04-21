@@ -4,18 +4,11 @@ const results = document.getElementById("results");
 const suggestions = document.getElementById("suggestions");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
-const userGreeting = document.getElementById("userGreeting");
-const logoutBtn = document.getElementById("logoutBtn");
-const loginLink = document.getElementById("loginLink");
-const signupLink = document.getElementById("signupLink");
-
 const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
-const FAVOURITES_KEY = "bookfinder_favourites";
 const HISTORY_KEY = "bookfinder_history";
 const THEME_KEY = "bookfinder_theme";
-const CURRENT_USER_KEY = "bookfinder_current_user";
 
 let currentController = null;
 let suggestionIndex = -1;
@@ -50,25 +43,6 @@ function toggleDarkMode() {
 
   if (darkModeToggle) {
     darkModeToggle.textContent = isDark ? "☀️" : "🌙";
-  }
-}
-
-/* -------------------------
-   User auth UI
--------------------------- */
-function updateUserUI() {
-  const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-
-  if (currentUser && userGreeting && logoutBtn && loginLink && signupLink) {
-    userGreeting.textContent = `Hi, ${currentUser.name}`;
-    logoutBtn.style.display = "inline-block";
-    loginLink.style.display = "none";
-    signupLink.style.display = "none";
-  } else if (userGreeting && logoutBtn && loginLink && signupLink) {
-    userGreeting.textContent = "";
-    logoutBtn.style.display = "none";
-    loginLink.style.display = "inline-block";
-    signupLink.style.display = "inline-block";
   }
 }
 
@@ -168,19 +142,10 @@ function updateSuggestionHighlight(items) {
 -------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderHistory();
-  renderFavourites();
   applySavedTheme();
-  updateUserUI();
 
   if (darkModeToggle) {
     darkModeToggle.addEventListener("click", toggleDarkMode);
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem(CURRENT_USER_KEY);
-      updateUserUI();
-    });
   }
 
   if (searchInput) {
@@ -359,29 +324,22 @@ function displayBooks(books) {
       });
     });
 
-    const favouriteBtn = document.createElement("button");
-    favouriteBtn.className = "btn btn-sm btn-outline-danger";
-    favouriteBtn.textContent = isFavourite(bookId) ? "♥ Saved" : "♡ Save";
-    favouriteBtn.setAttribute("aria-label", `Save ${title} to favourites`);
+    const saveForm = document.createElement("form");
+    saveForm.method = "POST";
+    saveForm.action = "save-book.php";
+    saveForm.className = "d-inline";
 
-    favouriteBtn.addEventListener("click", () => {
-      toggleFavourite({
-        id: bookId,
-        title,
-        authors,
-        image,
-        description,
-        publishedDate,
-        publisher,
-        previewLink
-      });
-
-      favouriteBtn.textContent = isFavourite(bookId) ? "♥ Saved" : "♡ Save";
-      renderFavourites();
-    });
+    saveForm.innerHTML = `
+      <input type="hidden" name="book_id" value="${escapeHtml(bookId)}">
+      <input type="hidden" name="title" value="${escapeHtml(title)}">
+      <input type="hidden" name="authors" value="${escapeHtml(authors)}">
+      <input type="hidden" name="thumbnail" value="${escapeHtml(image)}">
+      <input type="hidden" name="status" value="Want to Read">
+      <button type="submit" class="btn btn-sm btn-outline-danger">Save Book</button>
+    `;
 
     buttonGroup.appendChild(detailsBtn);
-    buttonGroup.appendChild(favouriteBtn);
+    buttonGroup.appendChild(saveForm);
 
     cardBody.appendChild(titleEl);
     cardBody.appendChild(authorEl);
@@ -418,63 +376,6 @@ function setLoading(isLoading) {
   if (!searchBtn) return;
   searchBtn.disabled = isLoading;
   searchBtn.textContent = isLoading ? "Searching..." : "Search";
-}
-
-/* -------------------------
-   Favourites
--------------------------- */
-function getFavourites() {
-  return JSON.parse(localStorage.getItem(FAVOURITES_KEY)) || [];
-}
-
-function saveFavourites(favourites) {
-  localStorage.setItem(FAVOURITES_KEY, JSON.stringify(favourites));
-}
-
-function isFavourite(bookId) {
-  return getFavourites().some((book) => book.id === bookId);
-}
-
-function toggleFavourite(book) {
-  let favourites = getFavourites();
-
-  if (isFavourite(book.id)) {
-    favourites = favourites.filter((fav) => fav.id !== book.id);
-  } else {
-    favourites.push(book);
-  }
-
-  saveFavourites(favourites);
-}
-
-function renderFavourites() {
-  const favouritesContainer = document.getElementById("favourites");
-  if (!favouritesContainer) return;
-
-  const favourites = getFavourites();
-  favouritesContainer.innerHTML = "";
-
-  if (!favourites.length) {
-    favouritesContainer.innerHTML = "<p>No favourites saved yet.</p>";
-    return;
-  }
-
-  favourites.forEach((book) => {
-    const item = document.createElement("div");
-    item.className = "card mb-2 p-2";
-
-    item.innerHTML = `
-      <div class="d-flex align-items-center gap-3">
-        <img src="${book.image}" alt="Cover of ${book.title}" width="50" height="75" style="object-fit: cover;">
-        <div>
-          <strong>${book.title}</strong><br>
-          <span>${book.authors}</span>
-        </div>
-      </div>
-    `;
-
-    favouritesContainer.appendChild(item);
-  });
 }
 
 /* -------------------------
@@ -570,4 +471,16 @@ function showBookDetails(book) {
       modal.style.display = "none";
     }
   });
+}
+
+/* -------------------------
+   Helper
+-------------------------- */
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
