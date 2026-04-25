@@ -1,6 +1,6 @@
 # 📚 BookFinder (PHP Version)
 
-BookFinder is a dynamic web application developed for the Advanced Web Development module. It allows users to search for books using the Google Books API and manage their own personalised collection.
+BookFinder is a dynamic web application developed for the Advanced Web Development module. It allows users to search for books using the Google Books API and manage a personalised reading collection.
 
 ---
 
@@ -19,23 +19,37 @@ BookFinder is a dynamic web application developed for the Advanced Web Developme
 ## 🚀 Features
 
 ### 🔐 User Authentication
-- Sign up, login, and logout system using PHP sessions
+- Secure sign up, login, and logout system using PHP sessions
 
 ### 🔍 Book Search
 - Search for books using the Google Books API
 - Displays title, author, and cover image
+- Includes auto-suggestions for improved user experience
+
+### 🎯 Filtering & Sorting
+- Filter current search results by:
+  - Author
+  - Subject (e.g. fantasy, romance)
+- Sort results by:
+  - A–Z (title)
+  - Newest publication year
+  - Oldest publication year
+- Implemented client-side for performance optimisation
 
 ### 📖 My Books (CRUD Functionality)
-- Add books to your personal collection (Create)
+- Add books to a personal collection (Create)
 - View saved books (Read)
 - Update reading status (Update)
-- Remove books from your collection (Delete)
+- Remove books from collection (Delete)
 
 ### 🧠 Database Integration
-- MySQL database used to store user and book data
+- MySQL database used to store users and saved books
+- Data managed using prepared statements for security
 
-### 📱 Responsive Design
-- Built with Bootstrap for mobile and desktop compatibility
+### 🌙 User Experience Enhancements
+- Dark mode toggle
+- Search history stored using localStorage
+- Responsive layout across devices
 
 ---
 
@@ -43,7 +57,7 @@ BookFinder is a dynamic web application developed for the Advanced Web Developme
 
 - HTML5  
 - CSS3  
-- JavaScript  
+- JavaScript (ES6)  
 - PHP  
 - MySQL  
 - Bootstrap 5  
@@ -53,19 +67,24 @@ BookFinder is a dynamic web application developed for the Advanced Web Developme
 
 ## 🔒 Security & Best Practices
 
-- Passwords handled securely  
-- Input validation implemented  
-- Prepared statements used for database queries  
-- Sessions used for authentication  
+- Passwords securely hashed using PHP `password_hash()`
+- Input validation and sanitisation applied
+- Prepared statements used to prevent SQL injection
+- Sessions used for secure authentication
 
 ---
 
 ## ♿ Accessibility & Performance
 
-- Semantic HTML used  
-- Form inputs include labels  
-- Designed to be responsive across devices  
-- Tested using Google Chrome Lighthouse (mobile & desktop)  
+- Semantic HTML structure used
+- Form inputs include accessible labels
+- ARIA attributes used for dynamic content
+- Responsive design for mobile and desktop
+- Tested using Google Chrome Lighthouse:
+  - Performance: 90+  
+  - Accessibility: 95+  
+  - Best Practices: 100  
+  - SEO: 100  
 
 ---
 
@@ -73,10 +92,11 @@ BookFinder is a dynamic web application developed for the Advanced Web Developme
 
 The application has been tested for:
 
-- User authentication (login/signup/logout)  
-- Book search functionality (API)  
-- CRUD operations (add, update, delete books)  
-- Form validation and error handling  
+- User authentication (login/signup/logout)
+- API integration and search functionality
+- Filtering and sorting behaviour
+- CRUD operations (add, update, delete books)
+- Form validation and error handling
 
 Full testing details are included in the submitted testing record.
 
@@ -92,13 +112,14 @@ This project meets the requirements of the Advanced Web Development assignment:
 - ✅ CRUD operations with MySQL database  
 - ✅ Third-party API integration  
 - ✅ Responsive and accessible design  
+- ✅ Enhanced functionality (filtering, sorting, search history)
 
 ---
 
 ## 📌 Notes
 
 - This project was developed as part of university coursework  
-- API key is secured and not exposed publicly  
+- API key is restricted and not exposed publicly  
 
 ---
 
