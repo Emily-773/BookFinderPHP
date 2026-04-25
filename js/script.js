@@ -4,6 +4,12 @@ const results = document.getElementById("results");
 const suggestions = document.getElementById("suggestions");
 const darkModeToggle = document.getElementById("darkModeToggle");
 
+const authorFilter = document.getElementById("authorFilter");
+const subjectFilter = document.getElementById("subjectFilter");
+const sortResults = document.getElementById("sortResults");
+const applyFiltersBtn = document.getElementById("applyFiltersBtn");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
 const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
 
 const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
@@ -12,12 +18,26 @@ const THEME_KEY = "bookfinder_theme";
 
 let currentController = null;
 let suggestionIndex = -1;
+let currentBooks = [];
 
 /* -------------------------
    Event listeners
 -------------------------- */
 if (searchBtn) {
   searchBtn.addEventListener("click", searchBooks);
+}
+
+if (applyFiltersBtn) {
+  applyFiltersBtn.addEventListener("click", applyFiltersAndSort);
+}
+
+if (clearFiltersBtn) {
+  clearFiltersBtn.addEventListener("click", () => {
+    if (authorFilter) authorFilter.value = "";
+    if (subjectFilter) subjectFilter.value = "";
+    if (sortResults) sortResults.value = "";
+    displayBooks(currentBooks);
+  });
 }
 
 /* -------------------------
@@ -37,7 +57,6 @@ function applySavedTheme() {
 
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
-
   const isDark = document.body.classList.contains("dark-mode");
   localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
 
@@ -77,11 +96,7 @@ async function fetchSuggestions(query) {
     const items = data.items || [];
 
     const titles = [
-      ...new Set(
-        items
-          .map((item) => item.volumeInfo?.title)
-          .filter(Boolean)
-      )
+      ...new Set(items.map((item) => item.volumeInfo?.title).filter(Boolean))
     ];
 
     renderSuggestions(titles);
@@ -111,9 +126,7 @@ function renderSuggestions(items) {
     div.dataset.index = index;
 
     div.addEventListener("click", () => {
-      if (searchInput) {
-        searchInput.value = item;
-      }
+      if (searchInput) searchInput.value = item;
       hideSuggestions();
       searchBooks();
     });
@@ -215,11 +228,6 @@ async function searchBooks() {
     return;
   }
 
-  if (!API_KEY || API_KEY === "HIDDEN KEY WILL ADD" || API_KEY === "YOUR_API_KEY_HERE") {
-    showMessage("Please add your Google Books API key first.");
-    return;
-  }
-
   if (currentController) {
     currentController.abort();
   }
@@ -230,7 +238,7 @@ async function searchBooks() {
   showSpinner();
 
   try {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8&key=${API_KEY}`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=12&key=${API_KEY}`;
 
     const response = await fetch(url, {
       signal: currentController.signal
@@ -241,9 +249,12 @@ async function searchBooks() {
     }
 
     const data = await response.json();
+
+    currentBooks = data.items || [];
+
     saveSearchHistory(query);
     renderHistory();
-    displayBooks(data.items || []);
+    applyFiltersAndSort();
   } catch (error) {
     if (error.name === "AbortError") return;
 
@@ -252,6 +263,62 @@ async function searchBooks() {
   } finally {
     setLoading(false);
   }
+}
+
+/* -------------------------
+   Filter and sort
+-------------------------- */
+function applyFiltersAndSort() {
+  let filteredBooks = [...currentBooks];
+
+  const authorValue = authorFilter ? authorFilter.value.trim().toLowerCase() : "";
+  const subjectValue = subjectFilter ? subjectFilter.value.trim().toLowerCase() : "";
+  const sortValue = sortResults ? sortResults.value : "";
+
+  if (authorValue) {
+    filteredBooks = filteredBooks.filter((book) => {
+      const authors = book.volumeInfo?.authors || [];
+      return authors.join(" ").toLowerCase().includes(authorValue);
+    });
+  }
+
+  if (subjectValue) {
+    filteredBooks = filteredBooks.filter((book) => {
+      const categories = book.volumeInfo?.categories || [];
+      const description = book.volumeInfo?.description || "";
+      const title = book.volumeInfo?.title || "";
+
+      return (
+        categories.join(" ").toLowerCase().includes(subjectValue) ||
+        description.toLowerCase().includes(subjectValue) ||
+        title.toLowerCase().includes(subjectValue)
+      );
+    });
+  }
+
+  if (sortValue === "title-az") {
+    filteredBooks.sort((a, b) => {
+      const titleA = a.volumeInfo?.title || "";
+      const titleB = b.volumeInfo?.title || "";
+      return titleA.localeCompare(titleB);
+    });
+  }
+
+  if (sortValue === "newest") {
+    filteredBooks.sort((a, b) => getBookYear(b) - getBookYear(a));
+  }
+
+  if (sortValue === "oldest") {
+    filteredBooks.sort((a, b) => getBookYear(a) - getBookYear(b));
+  }
+
+  displayBooks(filteredBooks);
+}
+
+function getBookYear(book) {
+  const publishedDate = book.volumeInfo?.publishedDate || "";
+  const year = parseInt(publishedDate.substring(0, 4), 10);
+  return Number.isNaN(year) ? 0 : year;
 }
 
 /* -------------------------
@@ -305,6 +372,10 @@ function displayBooks(books) {
     authorEl.className = "card-text";
     authorEl.textContent = authors;
 
+    const yearEl = document.createElement("p");
+    yearEl.className = "card-text small text-muted";
+    yearEl.textContent = `Published: ${publishedDate}`;
+
     const buttonGroup = document.createElement("div");
     buttonGroup.className = "mt-auto d-flex gap-2 flex-wrap";
 
@@ -343,6 +414,7 @@ function displayBooks(books) {
 
     cardBody.appendChild(titleEl);
     cardBody.appendChild(authorEl);
+    cardBody.appendChild(yearEl);
     cardBody.appendChild(buttonGroup);
 
     card.appendChild(img);
@@ -419,9 +491,7 @@ function renderHistory() {
     btn.className = "btn btn-sm btn-outline-secondary me-2 mb-2";
     btn.textContent = query;
     btn.addEventListener("click", () => {
-      if (searchInput) {
-        searchInput.value = query;
-      }
+      if (searchInput) searchInput.value = query;
       searchBooks();
     });
 
@@ -445,14 +515,14 @@ function showBookDetails(book) {
   modal.innerHTML = `
     <div class="book-modal-content">
       <button class="book-modal-close" aria-label="Close book details">&times;</button>
-      <img src="${book.image}" alt="Cover of ${book.title}" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
-      <h3>${book.title}</h3>
-      <p><strong>Author(s):</strong> ${book.authors}</p>
-      <p><strong>Publisher:</strong> ${book.publisher}</p>
-      <p><strong>Published:</strong> ${book.publishedDate}</p>
-      <p>${book.description}</p>
+      <img src="${escapeHtml(book.image)}" alt="Cover of ${escapeHtml(book.title)}" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
+      <h3>${escapeHtml(book.title)}</h3>
+      <p><strong>Author(s):</strong> ${escapeHtml(book.authors)}</p>
+      <p><strong>Publisher:</strong> ${escapeHtml(book.publisher)}</p>
+      <p><strong>Published:</strong> ${escapeHtml(book.publishedDate)}</p>
+      <p>${escapeHtml(book.description)}</p>
       <p>
-        <a href="${book.previewLink}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+        <a href="${escapeHtml(book.previewLink)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
           Preview Book
         </a>
       </p>

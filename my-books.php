@@ -22,25 +22,49 @@ $message = $_GET['message'] ?? '';
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Books | BookFinder</title>
+
+  <meta name="description" content="View, update, and delete your saved books in your personal BookFinder collection.">
+  <meta name="robots" content="index, follow">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
   <main class="container py-5">
     <div class="auth-box mx-auto" style="max-width: 900px;">
-      <h1 class="mb-4 text-center">My Books</h1>
+
+      <div class="text-center mb-4">
+      <a href="index.php">
+        <picture>
+          <source srcset="images/logo.webp" type="image/webp">
+          <img src="images/logo.png"
+               width="187"
+               height="56"
+               alt="BookFinder Logo"
+               class="img-fluid mb-3">
+        </picture>
+        </a>
+
+        <h1 class="mb-3">My Books</h1>
+
+        <p class="text-muted">
+          Manage your saved books and update your reading status.
+        </p>
+      </div>
 
       <?php if ($message === 'saved'): ?>
-        <p class="text-success text-center">Book saved successfully.</p>
+        <p class="text-success text-center" aria-live="polite">Book saved successfully.</p>
       <?php elseif ($message === 'already_saved'): ?>
-        <p class="text-warning text-center">That book is already in your list.</p>
+        <p class="text-warning text-center" aria-live="polite">That book is already in your list.</p>
       <?php elseif ($message === 'updated'): ?>
-        <p class="text-success text-center">Book status updated.</p>
+        <p class="text-success text-center" aria-live="polite">Book status updated.</p>
       <?php elseif ($message === 'deleted'): ?>
-        <p class="text-success text-center">Book deleted.</p>
+        <p class="text-success text-center" aria-live="polite">Book deleted.</p>
       <?php endif; ?>
 
       <div class="text-center mb-4">
+        <a href="search.php" class="btn btn-success me-2">Search Books</a>
         <a href="index.php" class="btn btn-primary me-2">Back to Home</a>
         <a href="logout.php" class="btn btn-danger">Logout</a>
       </div>
@@ -51,15 +75,19 @@ $message = $_GET['message'] ?? '';
             <div class="col-md-6">
               <div class="card h-100 shadow-sm">
                 <?php if (!empty($book['thumbnail'])): ?>
-                  <img src="<?php echo htmlspecialchars($book['thumbnail']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($book['title']); ?>">
+                  <img src="<?php echo htmlspecialchars($book['thumbnail']); ?>"
+                       class="card-img-top"
+                       alt="Cover image for <?php echo htmlspecialchars($book['title']); ?>">
                 <?php endif; ?>
 
                 <div class="card-body">
-                  <h5 class="card-title"><?php echo htmlspecialchars($book['title']); ?></h5>
+                  <h2 class="h5 card-title"><?php echo htmlspecialchars($book['title']); ?></h2>
+
                   <p class="card-text">
                     <strong>Author(s):</strong>
                     <?php echo htmlspecialchars($book['authors'] ?: 'Unknown'); ?>
                   </p>
+
                   <p class="card-text">
                     <strong>Status:</strong>
                     <?php echo htmlspecialchars($book['status']); ?>
@@ -90,6 +118,7 @@ $message = $_GET['message'] ?? '';
       <?php else: ?>
         <p class="text-center">You have not saved any books yet.</p>
       <?php endif; ?>
+
     </div>
   </main>
 </body>

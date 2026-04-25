@@ -43,15 +43,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login | BookFinder</title>
+
+  <meta name="description" content="Login to BookFinder to search books, save favourites, and track your reading using the Google Books API.">
+  <meta name="robots" content="index, follow">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
   <main class="container py-5">
-    <div class="auth-box mx-auto">
-      <h2 class="mb-4 text-center">Login to BookFinder</h2>
+    <div class="auth-box mx-auto text-center">
 
-      <form method="POST" action="login.php" novalidate>
+    <a href="index.php">
+      <picture>
+        <source srcset="images/logo.webp" type="image/webp">
+        <img src="images/logo.png"
+             width="187"
+             height="56"
+             alt="BookFinder Logo"
+             class="img-fluid mb-3">
+      </picture>
+      </a>
+
+      <h1 class="h3 mb-4">Login to BookFinder</h1>
+
+      <form method="POST" action="login.php" novalidate class="text-start">
         <div class="mb-3">
           <label for="loginEmail" class="form-label">Email</label>
           <input

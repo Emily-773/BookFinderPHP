@@ -7,29 +7,83 @@ session_start();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BookFinder Home</title>
+
+  <!-- SEO Improvements -->
+  <meta name="description" content="BookFinder lets you search books, save favourites, and track your reading using the Google Books API.">
+  <meta name="robots" content="index, follow">
+
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Your CSS -->
   <link rel="stylesheet" href="./css/styles.css">
 </head>
-<body>
-  <main class="container py-5">
-    <div class="auth-box mx-auto text-center">
-      <h1 class="mb-4">BookFinder</h1>
 
+<body>
+
+  <main class="container py-5 text-center">
+
+    <!-- HERO SECTION -->
+    <section class="mb-5">
+
+      <!-- LOGO (Optimised with WebP + fallback) -->
+      <a href="index.php">
+      <picture>
+        <source srcset="images/logo.webp" type="image/webp">
+        <img src="images/logo.png"
+             width="187"
+             height="56"
+             alt="BookFinder Logo"
+             class="img-fluid mb-3">
+      </picture>
+      </a>
+
+      <!-- TITLE -->
+      <h1 class="display-5 fw-bold">BookFinder</h1>
+
+      <!-- DESCRIPTION -->
+      <p class="lead">
+        Search for books, discover new reads, and manage your personal collection using the Google Books API.
+      </p>
+
+      <!-- BUTTONS -->
       <?php if (isset($_SESSION['user_name'])): ?>
-        <p class="mb-3">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</p>
-        <p>
-          <a class="btn btn-success me-2" href="search.php">Search Books</a>
-          <a class="btn btn-primary me-2" href="my-books.php">My Books</a>
-          <a class="btn btn-danger" href="logout.php">Logout</a>
+        <p class="mb-3">
+          Welcome, <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong>!
         </p>
+
+        <a class="btn btn-success btn-lg me-2" href="search.php">Search Books</a>
+        <a class="btn btn-primary btn-lg me-2" href="my-books.php">My Books</a>
+        <a class="btn btn-danger btn-lg" href="logout.php">Logout</a>
+
       <?php else: ?>
-        <p class="mb-3">Welcome to BookFinder</p>
-        <p>
-          <a class="btn btn-primary me-2" href="login.php">Login</a>
-          <a class="btn btn-success" href="signup.php">Sign Up</a>
-        </p>
+        <a class="btn btn-primary btn-lg me-2" href="login.php">Login</a>
+        <a class="btn btn-success btn-lg" href="signup.php">Sign Up</a>
       <?php endif; ?>
-    </div>
+
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="row text-start">
+
+      <div class="col-md-4 mb-4">
+        <h2 class="h5">🔍 Search Books</h2>
+        <p>Use the Google Books API to search for books by title, author, or keyword.</p>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <h2 class="h5">❤️ Save Favourites</h2>
+        <p>Save books to your personal collection and access them anytime.</p>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <h2 class="h5">📖 Track Reading</h2>
+        <p>Update your reading status and manage your saved books easily.</p>
+      </div>
+
+    </section>
+
   </main>
+
 </body>
 </html>

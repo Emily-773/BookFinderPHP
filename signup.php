@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    // Validation
     if (empty($name) || empty($email) || empty($password)) {
         $message = 'Please fill in all fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -17,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 6) {
         $message = 'Password must be at least 6 characters.';
     } else {
-        // Check if email already exists
         $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -26,15 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $message = 'An account with this email already exists.';
         } else {
-            // Hash password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert user
             $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $name, $email, $hashedPassword);
 
             if ($stmt->execute()) {
-                // Auto login after signup
                 $_SESSION['user_id'] = $stmt->insert_id;
                 $_SESSION['user_name'] = $name;
                 $_SESSION['user_email'] = $email;
@@ -56,15 +51,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sign Up | BookFinder</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Create a BookFinder account to search books, save favourites, and track your reading using the Google Books API.">
+  <meta name="robots" content="index, follow">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
   <main class="container py-5">
-    <div class="auth-box mx-auto">
-      <h2 class="mb-4 text-center">Create a BookFinder Account</h2>
+    <div class="auth-box mx-auto text-center" style="max-width: 400px;">
 
-      <form method="POST" action="signup.php" novalidate>
+      <!-- LOGO -->
+      <a href="index.php">
+      <picture>
+        <source srcset="images/logo.webp" type="image/webp">
+        <img src="images/logo.png"
+             width="187"
+             height="56"
+             alt="BookFinder Logo"
+             class="img-fluid mb-3">
+      </picture>
+      </a>
+
+      <h1 class="h3 mb-4">Create a BookFinder Account</h1>
+
+      <form method="POST" action="signup.php" novalidate class="text-start">
+
         <div class="mb-3">
           <label for="signupName" class="form-label">Name</label>
           <input
