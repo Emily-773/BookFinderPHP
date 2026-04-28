@@ -315,3 +315,24 @@ body.dark-mode .auth-box {
   body.dark-mode .auth-box a {
     color: #9ecbff;
   }
+
+  /* -------------------------
+   Reviews
+-------------------------- */
+.review-box {
+  background: #f8f9fa;
+  border-left: 4px solid #198754;
+  border-radius: 6px;
+}
+
+.review-box p {
+  margin-bottom: 0.5rem;
+}
+
+  /* -------------------------
+  Add Colour to Star Review
+-------------------------- */
+.review-box strong {
+  color: #ffc107; /* gold stars */
+  font-size: 1.2rem;
+}

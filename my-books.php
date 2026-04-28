@@ -23,7 +23,7 @@ $message = $_GET['message'] ?? '';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Books | BookFinder</title>
 
-  <meta name="description" content="View, update, and delete your saved books in your personal BookFinder collection.">
+  <meta name="description" content="View, update, delete and review your saved books in your personal BookFinder collection.">
   <meta name="robots" content="index, follow">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -35,21 +35,21 @@ $message = $_GET['message'] ?? '';
     <div class="auth-box mx-auto" style="max-width: 900px;">
 
       <div class="text-center mb-4">
-      <a href="index.php">
-        <picture>
-          <source srcset="images/logo.webp" type="image/webp">
-          <img src="images/logo.png"
-               width="187"
-               height="56"
-               alt="BookFinder Logo"
-               class="img-fluid mb-3">
-        </picture>
+        <a href="index.php">
+          <picture>
+            <source srcset="images/logo.webp" type="image/webp">
+            <img src="images/logo.png"
+                 width="187"
+                 height="56"
+                 alt="BookFinder Logo"
+                 class="img-fluid mb-3">
+          </picture>
         </a>
 
         <h1 class="mb-3">My Books</h1>
 
         <p class="text-muted">
-          Manage your saved books and update your reading status.
+          Manage your saved books, update your reading status, and add book reviews.
         </p>
       </div>
 
@@ -61,6 +61,12 @@ $message = $_GET['message'] ?? '';
         <p class="text-success text-center" aria-live="polite">Book status updated.</p>
       <?php elseif ($message === 'deleted'): ?>
         <p class="text-success text-center" aria-live="polite">Book deleted.</p>
+      <?php elseif ($message === 'review_added'): ?>
+        <p class="text-success text-center" aria-live="polite">Review added successfully.</p>
+      <?php elseif ($message === 'review_updated'): ?>
+        <p class="text-success text-center" aria-live="polite">Review updated successfully.</p>
+      <?php elseif ($message === 'review_deleted'): ?>
+        <p class="text-success text-center" aria-live="polite">Review deleted successfully.</p>
       <?php endif; ?>
 
       <div class="text-center mb-4">
@@ -106,10 +112,102 @@ $message = $_GET['message'] ?? '';
                     <button type="submit" class="btn btn-success w-100">Update</button>
                   </form>
 
-                  <form action="delete-book.php" method="POST">
+                  <form action="delete-book.php" method="POST" class="mb-3">
                     <input type="hidden" name="saved_book_id" value="<?php echo $book['id']; ?>">
                     <button type="submit" class="btn btn-outline-danger w-100">Delete</button>
                   </form>
+
+                  <hr>
+
+                  <h3 class="h6">Add a Review</h3>
+
+                  <form action="add-review.php" method="POST" class="mb-3">
+                    <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
+
+                    <label for="rating-<?php echo $book['id']; ?>" class="form-label">Rating</label>
+                    <select name="rating" id="rating-<?php echo $book['id']; ?>" class="form-select mb-2" required>
+                      <option value="">Choose rating</option>
+                      <option value="5">5 stars</option>
+                      <option value="4">4 stars</option>
+                      <option value="3">3 stars</option>
+                      <option value="2">2 stars</option>
+                      <option value="1">1 star</option>
+                    </select>
+
+                    <label for="review-<?php echo $book['id']; ?>" class="form-label">Review</label>
+                    <textarea name="review_text"
+                              id="review-<?php echo $book['id']; ?>"
+                              class="form-control mb-2"
+                              rows="3"
+                              required></textarea>
+
+                    <button type="submit" class="btn btn-primary w-100">Add Review</button>
+                  </form>
+
+                  <?php
+                  $review_stmt = $conn->prepare("SELECT id, rating, review_text, created_at FROM book_reviews WHERE book_id = ? AND user_id = ? ORDER BY created_at DESC");
+                  $review_stmt->bind_param("ii", $book['id'], $user_id);
+                  $review_stmt->execute();
+                  $reviews = $review_stmt->get_result();
+                  ?>
+
+                  <?php if ($reviews->num_rows > 0): ?>
+                    <h3 class="h6">Your Reviews</h3>
+
+                    <?php while ($review = $reviews->fetch_assoc()): ?>
+                      <div class="review-box mt-2 p-3 border rounded">
+                        <strong>
+                          <?php
+                          $rating = (int)$review['rating'];
+                          for ($i = 1; $i <= 5; $i++) {
+                              echo ($i <= $rating) ? "★" : "☆";
+                          }
+                          ?>
+                        </strong>
+
+                        <p class="mb-1"><?php echo htmlspecialchars($review['review_text']); ?></p>
+
+                        <small class="text-muted">
+                          <?php echo date("d/m/Y H:i", strtotime($review['created_at'])); ?>
+                        </small>
+
+                        <button class="btn btn-outline-secondary w-100 mt-3 mb-2"
+                                onclick="this.nextElementSibling.style.display='block'; this.style.display='none'; return false;">
+                          Edit Review
+                        </button>
+
+                        <div style="display:none;">
+                          <form action="edit-review.php" method="POST" class="mt-3">
+                            <input type="hidden" name="review_id" value="<?php echo $review['id']; ?>">
+
+                            <label for="edit-rating-<?php echo $review['id']; ?>" class="form-label">Edit rating</label>
+                            <select name="rating" id="edit-rating-<?php echo $review['id']; ?>" class="form-select mb-2" required>
+                              <option value="5" <?php if ($review['rating'] == 5) echo 'selected'; ?>>5 stars</option>
+                              <option value="4" <?php if ($review['rating'] == 4) echo 'selected'; ?>>4 stars</option>
+                              <option value="3" <?php if ($review['rating'] == 3) echo 'selected'; ?>>3 stars</option>
+                              <option value="2" <?php if ($review['rating'] == 2) echo 'selected'; ?>>2 stars</option>
+                              <option value="1" <?php if ($review['rating'] == 1) echo 'selected'; ?>>1 star</option>
+                            </select>
+
+                            <label for="edit-review-<?php echo $review['id']; ?>" class="form-label">Edit review</label>
+                            <textarea name="review_text"
+                                      id="edit-review-<?php echo $review['id']; ?>"
+                                      class="form-control mb-2"
+                                      rows="3"
+                                      required><?php echo htmlspecialchars($review['review_text']); ?></textarea>
+
+                            <button type="submit" class="btn btn-warning w-100 mb-2">Update Review</button>
+                          </form>
+                        </div>
+
+                        <form action="delete-review.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this review?');">
+                          <input type="hidden" name="review_id" value="<?php echo $review['id']; ?>">
+                          <button type="submit" class="btn btn-outline-danger w-100">Delete Review</button>
+                        </form>
+                      </div>
+                    <?php endwhile; ?>
+                  <?php endif; ?>
+
                 </div>
               </div>
             </div>
