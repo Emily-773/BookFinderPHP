@@ -26,16 +26,16 @@ session_start();
     <!-- HERO SECTION -->
     <section class="mb-5">
 
-      <!-- LOGO (Optimised with WebP + fallback) -->
+      <!-- LOGO -->
       <a href="index.php">
-      <picture>
-        <source srcset="images/logo.webp" type="image/webp">
-        <img src="images/logo.png"
-             width="187"
-             height="56"
-             alt="BookFinder Logo"
-             class="img-fluid mb-3">
-      </picture>
+        <picture>
+          <source srcset="images/logo.webp" type="image/webp">
+          <img src="images/logo.png"
+               width="187"
+               height="56"
+               alt="BookFinder Logo"
+               class="img-fluid mb-3">
+        </picture>
       </a>
 
       <!-- TITLE -->
@@ -63,6 +63,22 @@ session_start();
 
     </section>
 
+    <!-- 🎠 CAROUSEL (NEW SECTION) -->
+    <section class="mb-5 text-center" aria-labelledby="popularBooksHeading">
+      <h2 id="popularBooksHeading" class="h4 mb-3">🔥 Trending Now</h2>
+      <p class="text-muted">Discover popular books readers are enjoying right now.</p>
+
+      <div class="carousel-wrapper">
+        <button id="carouselPrev" class="carousel-btn" aria-label="Previous books">‹</button>
+
+        <div id="popularCarousel" class="popular-carousel">
+          <p>Loading popular books...</p>
+        </div>
+
+        <button id="carouselNext" class="carousel-btn" aria-label="Next books">›</button>
+      </div>
+    </section>
+
     <!-- FEATURES SECTION -->
     <section class="row text-start">
 
@@ -84,6 +100,9 @@ session_start();
     </section>
 
   </main>
+
+  <!-- IMPORTANT: correct path -->
+  <script src="./js/script.js"></script>
 
 </body>
 </html>

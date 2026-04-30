@@ -554,3 +554,71 @@ function escapeHtml(value) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
+
+/* -------------------------
+   Popular Current Reads Carousel
+-------------------------- */
+const popularCarousel = document.getElementById("popularCarousel");
+const carouselPrev = document.getElementById("carouselPrev");
+const carouselNext = document.getElementById("carouselNext");
+
+async function loadPopularBooks() {
+  if (!popularCarousel) return;
+
+  try {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=bestseller+fiction&orderBy=relevance&maxResults=10&key=${API_KEY}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Could not load popular books.");
+    }
+
+    const data = await response.json();
+    const books = data.items || [];
+
+    popularCarousel.innerHTML = "";
+
+    books.forEach((book) => {
+      const info = book.volumeInfo || {};
+
+      const title = info.title || "No title";
+      const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Unknown author";
+      const image = info.imageLinks?.thumbnail || FALLBACK_IMAGE;
+
+      const card = document.createElement("article");
+      card.className = "carousel-book-card";
+
+      card.innerHTML = `
+        <img src="${escapeHtml(image)}" alt="Cover of ${escapeHtml(title)}" loading="lazy">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(authors)}</p>
+      `;
+
+      popularCarousel.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error("Carousel failed:", error);
+    popularCarousel.innerHTML = "<p>Popular books could not be loaded.</p>";
+  }
+}
+
+if (carouselPrev && popularCarousel) {
+  carouselPrev.addEventListener("click", () => {
+    popularCarousel.scrollBy({
+      left: -220,
+      behavior: "smooth"
+    });
+  });
+}
+
+if (carouselNext && popularCarousel) {
+  carouselNext.addEventListener("click", () => {
+    popularCarousel.scrollBy({
+      left: 220,
+      behavior: "smooth"
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadPopularBooks);
