@@ -20,8 +20,8 @@ session_start();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Your CSS -->
-  <link rel="preload" href="./css/styles.css" as="style">
-  <link rel="stylesheet" href="./css/styles.css">
+ <link rel="preload" href="./css/styles.css?v=4" as="style">
+ <link rel="stylesheet" href="./css/styles.css?v=4">
 </head>
 
 <body>
@@ -106,8 +106,8 @@ session_start();
 
   </main>
 
-  <!-- JS (deferred for performance) -->
-  <script src="./js/script.js" defer></script>
+  <!-- JS  -->
+ <script src="./js/script.js?v=9"></script>
 
 </body>
 </html>

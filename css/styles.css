@@ -450,3 +450,435 @@ body.dark-mode .carousel-book-card p {
     font-size: 1.6rem;
   }
 }
+
+/* =========================
+   BookFinder Redesign Theme
+   Add at bottom of styles.css
+========================= */
+
+:root {
+  --bf-navy: #1f2a44;
+  --bf-cream: #f8f5ef;
+  --bf-gold: #c79a3b;
+  --bf-soft-blue: #dbe7f3;
+  --bf-white: #ffffff;
+  --bf-text: #1f2937;
+  --bf-muted: #6b7280;
+  --bf-border: #e5e7eb;
+  --bf-danger: #b42318;
+  --bf-success: #198754;
+}
+
+.bookfinder-theme {
+  background: var(--bf-cream);
+  color: var(--bf-text);
+}
+
+/* Header */
+.bf-header {
+  background: var(--bf-navy);
+  padding: 1rem 2rem;
+  box-shadow: 0 6px 20px rgba(31, 42, 68, 0.18);
+}
+
+.bf-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bf-logo {
+  height: auto;
+}
+
+.bf-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.bf-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+}
+
+.bf-nav a:hover,
+.bf-nav a[aria-current="page"] {
+  background: var(--bf-gold);
+  color: var(--bf-navy);
+}
+
+/* Main page */
+.my-books-page {
+  width: min(1400px, 96%);
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.my-books-hero {
+  background: linear-gradient(135deg, #ffffff, var(--bf-soft-blue));
+  border-radius: 24px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  box-shadow: 0 10px 30px rgba(31, 42, 68, 0.08);
+}
+
+.my-books-hero h1 {
+  color: var(--bf-navy);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 800;
+  margin: 0.25rem 0;
+}
+
+.my-books-hero p {
+  max-width: 700px;
+  color: var(--bf-muted);
+  margin-bottom: 0;
+}
+
+.eyebrow {
+  color: var(--bf-gold) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Alert */
+.bf-alert {
+  background: #ecfdf3;
+  color: #05603a;
+  border-left: 6px solid var(--bf-success);
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+/* Full-width book grid */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Saved book card */
+.saved-book-card {
+  background: var(--bf-white);
+  border: 1px solid var(--bf-border);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(31, 42, 68, 0.09);
+  display: flex;
+  flex-direction: column;
+}
+
+.saved-book-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(31, 42, 68, 0.14);
+}
+
+.book-cover-wrap {
+  background: var(--bf-soft-blue);
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.book-cover-wrap img {
+  width: auto;
+  max-width: 180px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(31, 42, 68, 0.18);
+}
+
+.missing-cover {
+  color: var(--bf-muted);
+  font-weight: 700;
+}
+
+.book-card-content {
+  padding: 1.25rem;
+}
+
+.book-card-content h2 {
+  color: var(--bf-navy);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0.75rem 0;
+}
+
+.book-author {
+  color: var(--bf-muted);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.status-want {
+  background: #fff7e6;
+  color: #8a5a00;
+}
+
+.status-reading {
+  background: #eaf2ff;
+  color: #1849a9;
+}
+
+.status-finished {
+  background: #ecfdf3;
+  color: #05603a;
+}
+
+/* Forms */
+.book-form,
+.review-panel,
+.user-reviews {
+  margin-top: 1rem;
+}
+
+.review-panel {
+  background: #faf7ef;
+  border: 1px solid #eadcc0;
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.review-panel h3,
+.user-reviews h3 {
+  color: var(--bf-navy);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.form-select,
+.form-control {
+  border-radius: 12px;
+}
+
+.form-select:focus,
+.form-control:focus {
+  border-color: var(--bf-gold);
+  box-shadow: 0 0 0 0.2rem rgba(199, 154, 59, 0.25);
+}
+
+/* Reviews */
+.review-box {
+  background: #ffffff;
+  border-left: 5px solid var(--bf-gold);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-top: 0.75rem;
+}
+
+.stars {
+  color: var(--bf-gold) !important;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.review-box small {
+  color: var(--bf-muted);
+}
+
+/* Buttons */
+.bookfinder-theme .btn-primary {
+  background: var(--bf-navy);
+  border-color: var(--bf-navy);
+}
+
+.bookfinder-theme .btn-primary:hover {
+  background: var(--bf-gold);
+  border-color: var(--bf-gold);
+  color: var(--bf-navy);
+}
+
+.bookfinder-theme .btn-warning {
+  background: var(--bf-gold);
+  border-color: var(--bf-gold);
+  color: var(--bf-navy);
+  font-weight: 700;
+}
+
+.bookfinder-theme .btn-outline-primary {
+  color: var(--bf-navy);
+  border-color: var(--bf-navy);
+}
+
+.bookfinder-theme .btn-outline-primary:hover {
+  background: var(--bf-navy);
+  color: #ffffff;
+}
+
+.bookfinder-theme .btn-outline-danger {
+  color: var(--bf-danger);
+  border-color: var(--bf-danger);
+}
+
+.bookfinder-theme .btn-outline-danger:hover {
+  background: var(--bf-danger);
+  color: #ffffff;
+}
+
+/* Empty state */
+.empty-library {
+  background: #ffffff;
+  border-radius: 24px;
+  text-align: center;
+  padding: 3rem 1rem;
+  box-shadow: 0 10px 28px rgba(31, 42, 68, 0.08);
+}
+
+.empty-library h2 {
+  color: var(--bf-navy);
+  font-weight: 800;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .bf-header {
+    padding: 1rem;
+  }
+
+  .bf-header-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .bf-nav {
+    justify-content: center;
+  }
+
+  .my-books-page {
+    width: 94%;
+    padding-top: 1rem;
+  }
+
+  .my-books-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-cover-wrap {
+    min-height: 230px;
+  }
+
+  .book-cover-wrap img {
+    height: 220px;
+  }
+}
+
+/* Dark mode support for redesigned page */
+body.dark-mode.bookfinder-theme {
+  background: #121212;
+}
+
+body.dark-mode .my-books-hero,
+body.dark-mode .saved-book-card,
+body.dark-mode .empty-library,
+body.dark-mode .review-box {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+body.dark-mode .book-card-content h2,
+body.dark-mode .review-panel h3,
+body.dark-mode .user-reviews h3,
+body.dark-mode .empty-library h2 {
+  color: #f1f1f1;
+}
+
+body.dark-mode .my-books-hero p,
+body.dark-mode .book-author,
+body.dark-mode .review-box small {
+  color: #d0d0d0;
+}
+
+body.dark-mode .review-panel {
+  background: #2a2a2a;
+  border-color: #444;
+}
+
+body.dark-mode .book-cover-wrap {
+  background: #2a2a2a;
+}
+
+/* =========================
+   FINAL POLISH (My Books)
+========================= */
+
+/* 1. Slightly smaller titles */
+.saved-book-card h2 {
+  font-size: 1.1rem;
+}
+
+/* 2. Better spacing under images */
+.book-card-content {
+  padding-top: 0.75rem;
+}
+
+/* 3. Smooth hover effect */
+.saved-book-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.saved-book-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 4. Softer background behind book images */
+.book-cover-wrap {
+  background: #eef2f7;
+}
+
+/* 5. Improve button styling to match theme */
+.btn-success {
+  background: var(--bf-navy);
+  border-color: var(--bf-navy);
+}
+
+.btn-success:hover {
+  background: var(--bf-gold);
+  border-color: var(--bf-gold);
+  color: #1f2a44;
+}

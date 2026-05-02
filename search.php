@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id'])) {
   <meta name="robots" content="index, follow">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css">
+<link rel="stylesheet" href="./css/styles.css?v=4">
 </head>
 
 <body>
@@ -124,6 +124,6 @@ if (!isset($_SESSION['user_id'])) {
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="./js/script.js"></script>
+  <script src="./js/script.js?v=9"></script>
 </body>
 </html>
