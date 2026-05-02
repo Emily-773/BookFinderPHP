@@ -7,6 +7,10 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+img {
+  max-width: 100%;
+}
+
 /* -------------------------
    Headings
 -------------------------- */
@@ -23,38 +27,40 @@ h4 {
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
-  .book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  }
+.book-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
 
-  .book-card img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-  }
+/* fixed image area helps reduce Lighthouse CLS */
+.book-card img {
+  width: 100%;
+  height: 250px;
+  aspect-ratio: 128 / 190;
+  object-fit: cover;
+  background-color: #f1f3f5;
+}
 
-  .book-card .card-body {
-    text-align: center;
-    padding: 15px;
-  }
+.book-card .card-body {
+  text-align: center;
+  padding: 15px;
+}
 
-  .book-card h6 {
-    font-size: 1rem;
-    font-weight: 600;
-  }
+.book-card h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
 
-  .book-card p {
-    font-size: 0.9rem;
-    color: #555;
-  }
+.book-card p {
+  font-size: 0.9rem;
+  color: #555;
+}
 
-  .book-card button {
-    flex: 1;
-  }
+.book-card button {
+  flex: 1;
+}
 
 /* -------------------------
    History Buttons
@@ -64,9 +70,9 @@ h4 {
   transition: background 0.2s ease;
 }
 
-  #history button:hover {
-    background-color: #e9ecef;
-  }
+#history button:hover {
+  background-color: #e9ecef;
+}
 
 /* -------------------------
    Favourites Section
@@ -76,9 +82,9 @@ h4 {
   transition: background 0.2s ease;
 }
 
-  #favourites .card:hover {
-    background-color: #f1f3f5;
-  }
+#favourites .card:hover {
+  background-color: #f1f3f5;
+}
 
 #favourites img {
   border-radius: 6px;
@@ -119,14 +125,16 @@ h4 {
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
-  animation: fadeIn 0.3s ease;
 }
 
-  .book-modal-content img {
-    width: 100%;
-    max-height: 250px;
-    object-fit: contain;
-  }
+.book-modal-content img {
+  width: 128px;
+  height: 190px;
+  max-height: 250px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
 
 .book-modal-close {
   position: absolute;
@@ -139,17 +147,13 @@ h4 {
 }
 
 /* -------------------------
-   Animations
+   Reduced Motion
 -------------------------- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
   }
 }
 
@@ -179,6 +183,7 @@ h4 {
 -------------------------- */
 button:focus,
 input:focus,
+a:focus,
 .suggestion-item:focus {
   outline: 3px solid #0d6efd;
   outline-offset: 2px;
@@ -192,64 +197,64 @@ body.dark-mode {
   color: #f1f1f1 !important;
 }
 
-  body.dark-mode .navbar {
-    background-color: #1e1e1e !important;
-  }
+body.dark-mode .navbar {
+  background-color: #1e1e1e !important;
+}
 
-  body.dark-mode .navbar-brand,
-  body.dark-mode h2,
-  body.dark-mode h4,
-  body.dark-mode h6,
-  body.dark-mode p,
-  body.dark-mode strong,
-  body.dark-mode span,
-  body.dark-mode section,
-  body.dark-mode main {
-    color: #f1f1f1 !important;
-  }
+body.dark-mode .navbar-brand,
+body.dark-mode h2,
+body.dark-mode h4,
+body.dark-mode h6,
+body.dark-mode p,
+body.dark-mode strong,
+body.dark-mode span,
+body.dark-mode section,
+body.dark-mode main {
+  color: #f1f1f1 !important;
+}
 
-  body.dark-mode .book-card,
-  body.dark-mode .card,
-  body.dark-mode .book-modal-content {
-    background-color: #1e1e1e !important;
-    color: #f1f1f1 !important;
-    border-color: #444 !important;
-  }
+body.dark-mode .book-card,
+body.dark-mode .card,
+body.dark-mode .book-modal-content {
+  background-color: #1e1e1e !important;
+  color: #f1f1f1 !important;
+  border-color: #444 !important;
+}
 
-    body.dark-mode .book-card p,
-    body.dark-mode #history p,
-    body.dark-mode #favourites p {
-      color: #d0d0d0 !important;
-    }
+body.dark-mode .book-card p,
+body.dark-mode #history p,
+body.dark-mode #favourites p {
+  color: #d0d0d0 !important;
+}
 
-  body.dark-mode input.form-control {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
+body.dark-mode input.form-control {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border: 1px solid #555 !important;
+}
 
-    body.dark-mode input.form-control::placeholder {
-      color: #cccccc !important;
-    }
+body.dark-mode input.form-control::placeholder {
+  color: #cccccc !important;
+}
 
-  body.dark-mode #history button {
-    color: #f1f1f1 !important;
-    border-color: #888 !important;
-    background-color: transparent !important;
-  }
+body.dark-mode #history button {
+  color: #f1f1f1 !important;
+  border-color: #888 !important;
+  background-color: transparent !important;
+}
 
-    body.dark-mode #history button:hover {
-      background-color: #333 !important;
-    }
+body.dark-mode #history button:hover {
+  background-color: #333 !important;
+}
 
-  body.dark-mode .btn-outline-secondary {
-    color: #ffffff !important;
-    border-color: #888 !important;
-  }
+body.dark-mode .btn-outline-secondary {
+  color: #ffffff !important;
+  border-color: #888 !important;
+}
 
-  body.dark-mode .book-modal-close {
-    color: #ffffff !important;
-  }
+body.dark-mode .book-modal-close {
+  color: #ffffff !important;
+}
 
 /* -------------------------
    Search Suggestions
@@ -277,10 +282,10 @@ body.dark-mode {
   font-size: 0.95rem;
 }
 
-  .suggestion-item:hover,
-  .suggestion-item.active {
-    background-color: #f1f3f5;
-  }
+.suggestion-item:hover,
+.suggestion-item.active {
+  background-color: #f1f3f5;
+}
 
 body.dark-mode .suggestions-dropdown {
   background: #1e1e1e;
@@ -291,10 +296,10 @@ body.dark-mode .suggestion-item {
   color: #f1f1f1;
 }
 
-  body.dark-mode .suggestion-item:hover,
-  body.dark-mode .suggestion-item.active {
-    background-color: #333;
-  }
+body.dark-mode .suggestion-item:hover,
+body.dark-mode .suggestion-item.active {
+  background-color: #333;
+}
 
 /* -------------------------
    Auth Pages
@@ -312,11 +317,11 @@ body.dark-mode .auth-box {
   color: #f1f1f1;
 }
 
-  body.dark-mode .auth-box a {
-    color: #9ecbff;
-  }
+body.dark-mode .auth-box a {
+  color: #9ecbff;
+}
 
-  /* -------------------------
+/* -------------------------
    Reviews
 -------------------------- */
 .review-box {
@@ -329,12 +334,13 @@ body.dark-mode .auth-box {
   margin-bottom: 0.5rem;
 }
 
-  /* -------------------------
-  Add Colour to Star Review
--------------------------- */
 .review-box strong {
-  color: #ffc107; /* gold stars */
+  color: #ffc107;
   font-size: 1.2rem;
+}
+
+body.dark-mode .review-box {
+  background-color: #2a2a2a;
 }
 
 /* -------------------------
@@ -354,11 +360,14 @@ body.dark-mode .auth-box {
   scroll-behavior: smooth;
   padding: 15px 5px;
   scrollbar-width: thin;
+  min-height: 310px;
 }
 
 .carousel-book-card {
+  flex: 0 0 180px;
   min-width: 180px;
   max-width: 180px;
+  min-height: 295px;
   background: #ffffff;
   border-radius: 12px;
   padding: 12px;
@@ -369,8 +378,10 @@ body.dark-mode .auth-box {
 .carousel-book-card img {
   width: 100%;
   height: 220px;
+  aspect-ratio: 128 / 190;
   object-fit: cover;
   border-radius: 8px;
+  background-color: #f1f3f5;
 }
 
 .carousel-book-card h3 {
@@ -418,9 +429,15 @@ body.dark-mode .carousel-book-card p {
     gap: 8px;
   }
 
+  .popular-carousel {
+    min-height: 285px;
+  }
+
   .carousel-book-card {
+    flex: 0 0 150px;
     min-width: 150px;
     max-width: 150px;
+    min-height: 265px;
   }
 
   .carousel-book-card img {

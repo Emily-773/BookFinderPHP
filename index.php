@@ -6,16 +6,21 @@ session_start();
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>BookFinder Home</title>
 
-  <!-- SEO Improvements -->
+  <!-- SEO -->
   <meta name="description" content="BookFinder lets you search books, save favourites, and track your reading using the Google Books API.">
   <meta name="robots" content="index, follow">
+
+  <!-- Preconnect (performance boost) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Your CSS -->
+  <link rel="preload" href="./css/styles.css" as="style">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 
@@ -63,7 +68,7 @@ session_start();
 
     </section>
 
-    <!-- 🎠 CAROUSEL (NEW SECTION) -->
+    <!-- CAROUSEL -->
     <section class="mb-5 text-center" aria-labelledby="popularBooksHeading">
       <h2 id="popularBooksHeading" class="h4 mb-3">🔥 Trending Now</h2>
       <p class="text-muted">Discover popular books readers are enjoying right now.</p>
@@ -71,7 +76,7 @@ session_start();
       <div class="carousel-wrapper">
         <button id="carouselPrev" class="carousel-btn" aria-label="Previous books">‹</button>
 
-        <div id="popularCarousel" class="popular-carousel">
+        <div id="popularCarousel" class="popular-carousel" aria-live="polite">
           <p>Loading popular books...</p>
         </div>
 
@@ -79,7 +84,7 @@ session_start();
       </div>
     </section>
 
-    <!-- FEATURES SECTION -->
+    <!-- FEATURES -->
     <section class="row text-start">
 
       <div class="col-md-4 mb-4">
@@ -101,8 +106,8 @@ session_start();
 
   </main>
 
-  <!-- IMPORTANT: correct path -->
-  <script src="./js/script.js"></script>
+  <!-- JS (deferred for performance) -->
+  <script src="./js/script.js" defer></script>
 
 </body>
 </html>

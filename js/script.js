@@ -21,6 +21,33 @@ let suggestionIndex = -1;
 let currentBooks = [];
 
 /* -------------------------
+   Helpers
+-------------------------- */
+function forceHttps(url) {
+  if (!url) return FALLBACK_IMAGE;
+  return url.replace(/^http:\/\//i, "https://");
+}
+
+function safeBookId(book) {
+  if (book.id) return book.id;
+
+  if (window.crypto && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return `book-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/* -------------------------
    Event listeners
 -------------------------- */
 if (searchBtn) {
@@ -151,11 +178,12 @@ function updateSuggestionHighlight(items) {
 }
 
 /* -------------------------
-   Initialise on page load
+   Initialise
 -------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   renderHistory();
   applySavedTheme();
+  loadPopularBooks();
 
   if (darkModeToggle) {
     darkModeToggle.addEventListener("click", toggleDarkMode);
@@ -207,7 +235,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("click", (e) => {
-    if (suggestions && searchInput && !suggestions.contains(e.target) && e.target !== searchInput) {
+    if (
+      suggestions &&
+      searchInput &&
+      !suggestions.contains(e.target) &&
+      e.target !== searchInput
+    ) {
       hideSuggestions();
     }
   });
@@ -336,15 +369,15 @@ function displayBooks(books) {
 
   books.forEach((book) => {
     const info = book.volumeInfo || {};
-    const bookId = book.id || crypto.randomUUID();
+    const bookId = safeBookId(book);
 
     const title = info.title || "No title";
     const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Unknown author";
-    const image = info.imageLinks?.thumbnail || FALLBACK_IMAGE;
+    const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
     const description = info.description || "No description available.";
     const publishedDate = info.publishedDate || "Unknown";
     const publisher = info.publisher || "Unknown";
-    const previewLink = info.previewLink || "#";
+    const previewLink = forceHttps(info.previewLink || "#");
 
     const col = document.createElement("div");
     col.className = "col-md-3 mb-4";
@@ -357,6 +390,10 @@ function displayBooks(books) {
     img.className = "card-img-top";
     img.alt = `Cover of ${title}`;
     img.loading = "lazy";
+    img.decoding = "async";
+    img.width = 128;
+    img.height = 190;
+
     img.onerror = function () {
       this.src = FALLBACK_IMAGE;
     };
@@ -382,6 +419,7 @@ function displayBooks(books) {
     const detailsBtn = document.createElement("button");
     detailsBtn.className = "btn btn-sm btn-outline-primary";
     detailsBtn.textContent = "View Details";
+
     detailsBtn.addEventListener("click", () => {
       showBookDetails({
         id: bookId,
@@ -430,7 +468,7 @@ function displayBooks(books) {
 -------------------------- */
 function showMessage(message) {
   if (!results) return;
-  results.innerHTML = `<p class="text-center">${message}</p>`;
+  results.innerHTML = `<p class="text-center">${escapeHtml(message)}</p>`;
 }
 
 function showSpinner() {
@@ -490,6 +528,7 @@ function renderHistory() {
     const btn = document.createElement("button");
     btn.className = "btn btn-sm btn-outline-secondary me-2 mb-2";
     btn.textContent = query;
+
     btn.addEventListener("click", () => {
       if (searchInput) searchInput.value = query;
       searchBooks();
@@ -500,7 +539,7 @@ function renderHistory() {
 }
 
 /* -------------------------
-   Book details
+   Book details modal
 -------------------------- */
 function showBookDetails(book) {
   let modal = document.getElementById("bookDetailsModal");
@@ -515,7 +554,14 @@ function showBookDetails(book) {
   modal.innerHTML = `
     <div class="book-modal-content">
       <button class="book-modal-close" aria-label="Close book details">&times;</button>
-      <img src="${escapeHtml(book.image)}" alt="Cover of ${escapeHtml(book.title)}" class="img-fluid mb-3" style="max-height: 250px; object-fit: contain;">
+      <img 
+        src="${escapeHtml(book.image)}" 
+        alt="Cover of ${escapeHtml(book.title)}" 
+        class="img-fluid mb-3" 
+        width="128" 
+        height="190"
+        style="max-height: 250px; object-fit: contain;"
+      >
       <h3>${escapeHtml(book.title)}</h3>
       <p><strong>Author(s):</strong> ${escapeHtml(book.authors)}</p>
       <p><strong>Publisher:</strong> ${escapeHtml(book.publisher)}</p>
@@ -532,27 +578,20 @@ function showBookDetails(book) {
   modal.style.display = "flex";
 
   const closeBtn = modal.querySelector(".book-modal-close");
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
+
+  if (closeBtn) {
+    closeBtn.focus();
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  }
 
   modal.addEventListener("click", (e) => {
     if (e.target === modal) {
       modal.style.display = "none";
     }
   });
-}
-
-/* -------------------------
-   Helper
--------------------------- */
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
 }
 
 /* -------------------------
@@ -583,20 +622,26 @@ async function loadPopularBooks() {
 
       const title = info.title || "No title";
       const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Unknown author";
-      const image = info.imageLinks?.thumbnail || FALLBACK_IMAGE;
+      const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
 
       const card = document.createElement("article");
       card.className = "carousel-book-card";
 
       card.innerHTML = `
-        <img src="${escapeHtml(image)}" alt="Cover of ${escapeHtml(title)}" loading="lazy">
+        <img 
+          src="${escapeHtml(image)}" 
+          alt="Cover of ${escapeHtml(title)}" 
+          loading="lazy"
+          decoding="async"
+          width="128"
+          height="190"
+        >
         <h3>${escapeHtml(title)}</h3>
         <p>${escapeHtml(authors)}</p>
       `;
 
       popularCarousel.appendChild(card);
     });
-
   } catch (error) {
     console.error("Carousel failed:", error);
     popularCarousel.innerHTML = "<p>Popular books could not be loaded.</p>";
@@ -620,5 +665,3 @@ if (carouselNext && popularCarousel) {
     });
   });
 }
-
-document.addEventListener("DOMContentLoaded", loadPopularBooks);
