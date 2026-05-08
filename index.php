@@ -9,105 +9,222 @@ session_start();
 
   <title>BookFinder Home</title>
 
-  <!-- SEO -->
-  <meta name="description" content="BookFinder lets you search books, save favourites, and track your reading using the Google Books API.">
+  <meta name="description" content="BookFinder lets you search books, save favourites, review books and track your reading using the Google Books API.">
   <meta name="robots" content="index, follow">
 
-  <!-- Preconnect (performance boost) -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Your CSS -->
- <link rel="preload" href="./css/styles.css?v=4" as="style">
- <link rel="stylesheet" href="./css/styles.css?v=4">
+  <link rel="preconnect" href="https://www.googleapis.com">
+  <link rel="preconnect" href="https://books.google.com">
+  <link rel="stylesheet" href="./css/styles.css?v=17">
 </head>
 
 <body>
 
-  <main class="container py-5 text-center">
+<header class="bf-header">
+  <div class="bf-header-inner">
+    <a href="index.php" class="bf-brand" aria-label="BookFinder home">
+      <picture>
+        <source srcset="images/logo.webp" type="image/webp">
+        <img src="images/logo.png" alt="BookFinder logo" width="200" height="51">
+      </picture>
+    </a>
 
-    <!-- HERO SECTION -->
-    <section class="mb-5">
-
-      <!-- LOGO -->
-      <a href="index.php">
-        <picture>
-          <source srcset="images/logo.webp" type="image/webp">
-          <img src="images/logo.png"
-               width="187"
-               height="56"
-               alt="BookFinder Logo"
-               class="img-fluid mb-3">
-        </picture>
-      </a>
-
-      <!-- TITLE -->
-      <h1 class="display-5 fw-bold">BookFinder</h1>
-
-      <!-- DESCRIPTION -->
-      <p class="lead">
-        Search for books, discover new reads, and manage your personal collection using the Google Books API.
-      </p>
-
-      <!-- BUTTONS -->
+    <nav class="bf-nav" aria-label="Main navigation">
       <?php if (isset($_SESSION['user_name'])): ?>
-        <p class="mb-3">
-          Welcome, <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong>!
-        </p>
-
-        <a class="btn btn-success btn-lg me-2" href="search.php">Search Books</a>
-        <a class="btn btn-primary btn-lg me-2" href="my-books.php">My Books</a>
-        <a class="btn btn-danger btn-lg" href="logout.php">Logout</a>
-
-      <?php else: ?>
-        <a class="btn btn-primary btn-lg me-2" href="login.php">Login</a>
-        <a class="btn btn-success btn-lg" href="signup.php">Sign Up</a>
+        <span class="bf-user">Hi, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
       <?php endif; ?>
 
-    </section>
+      <a href="search.php">🔍 Search Books</a>
+      <a href="my-books.php">📖 My Books</a>
+      <a href="index.php" aria-current="page">🏠 Home</a>
 
-    <!-- CAROUSEL -->
-    <section class="mb-5 text-center" aria-labelledby="popularBooksHeading">
-      <h2 id="popularBooksHeading" class="h4 mb-3">🔥 Trending Now</h2>
-      <p class="text-muted">Discover popular books readers are enjoying right now.</p>
+      <?php if (isset($_SESSION['user_name'])): ?>
+        <a href="logout.php">↪ Logout</a>
+      <?php else: ?>
+        <a href="login.php">Login</a>
+        <a href="signup.php">Sign Up</a>
+      <?php endif; ?>
+    </nav>
+  </div>
+</header>
 
-      <div class="carousel-wrapper">
-        <button id="carouselPrev" class="carousel-btn" aria-label="Previous books">‹</button>
+<main class="homepage">
 
-        <div id="popularCarousel" class="popular-carousel" aria-live="polite">
-          <p>Loading popular books...</p>
-        </div>
+  <section class="home-hero-upgrade" aria-labelledby="homeTitle">
+    <div class="home-hero-text">
+      <p class="eyebrow">Find. Save. Review.</p>
 
-        <button id="carouselNext" class="carousel-btn" aria-label="Next books">›</button>
+      <h1 id="homeTitle">Find your next<br>great read</h1>
+
+      <p class="home-lead">
+        Search for books, discover new reads, save your favourites and manage your personal reading collection in one place.
+      </p>
+
+      <div class="home-actions">
+        <a class="bf-btn bf-btn-primary" href="search.php">🔍 Search Books</a>
+        <a class="bf-btn bf-btn-outline" href="my-books.php">📖 My Books</a>
+        <a class="bf-btn bf-btn-outline" href="#recommendedBooks">⭐ View Recommendations</a>
       </div>
-    </section>
+    </div>
 
-    <!-- FEATURES -->
-    <section class="row text-start">
+    <div class="home-hero-image" aria-hidden="true">
+      <picture>
+        <source srcset="images/books-cup-plant.webp" type="image/webp">
+        <img src="images/books-cup-plant.png"
+             alt=""
+             width="800"
+             height="533"
+             loading="eager"
+             decoding="async">
+      </picture>
+    </div>
+  </section>
 
-      <div class="col-md-4 mb-4">
-        <h2 class="h5">🔍 Search Books</h2>
-        <p>Use the Google Books API to search for books by title, author, or keyword.</p>
+  <section class="home-feature-grid upgraded-grid" aria-label="BookFinder key features">
+    <article>
+      <span class="feature-icon">🔍</span>
+      <div>
+        <h2>Search books</h2>
+        <p>Find titles by keyword, author or subject using live API results.</p>
+      </div>
+    </article>
+
+    <article>
+      <span class="feature-icon">📚</span>
+      <div>
+        <h2>Build a library</h2>
+        <p>Save books into your own personal collection for later.</p>
+      </div>
+    </article>
+
+    <article>
+      <span class="feature-icon">⭐</span>
+      <div>
+        <h2>Review reads</h2>
+        <p>Add ratings and reviews to reflect on books you have saved.</p>
+      </div>
+    </article>
+
+    <article>
+      <span class="feature-icon">🕘</span>
+      <div>
+        <h2>Recent searches</h2>
+        <p>Quickly revisit your recent searches and continue exploring.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="home-carousel-section upgraded-panel" aria-labelledby="popularBooksHeading">
+    <div class="section-heading section-heading-row">
+      <div>
+        <p class="eyebrow">Popular inspiration</p>
+        <h2 id="popularBooksHeading">🔥 Trending Now</h2>
+        <p>Discover popular books readers are enjoying right now.</p>
       </div>
 
-      <div class="col-md-4 mb-4">
-        <h2 class="h5">❤️ Save Favourites</h2>
-        <p>Save books to your personal collection and access them anytime.</p>
+      <a href="search.php" class="bf-btn bf-btn-outline small-btn">View all trending ›</a>
+    </div>
+
+    <div class="carousel-wrapper upgraded-carousel">
+      <button id="carouselPrev" class="carousel-btn" aria-label="Previous books">‹</button>
+
+      <div id="popularCarousel" class="popular-carousel" aria-live="polite">
+        <p>Loading popular books...</p>
       </div>
 
-      <div class="col-md-4 mb-4">
-        <h2 class="h5">📖 Track Reading</h2>
-        <p>Update your reading status and manage your saved books easily.</p>
+      <button id="carouselNext" class="carousel-btn" aria-label="Next books">›</button>
+    </div>
+  </section>
+
+  <section class="home-lower-grid">
+    <article class="home-mini-panel">
+      <div class="mini-panel-heading">
+        <h2>🕘 Recently Viewed</h2>
+        <a href="search.php">View all</a>
       </div>
 
-    </section>
+      <div id="recentlyViewedList" class="recently-viewed-list">
+        <p>No recently viewed books yet.</p>
+      </div>
+    </article>
 
-  </main>
+    <article class="home-mini-panel" id="recommendedBooks">
+      <div class="mini-panel-heading">
+        <h2>⭐ Recommended For You</h2>
+        <a href="search.php">View all</a>
+      </div>
 
-  <!-- JS  -->
- <script src="./js/script.js?v=9"></script>
+      <div id="recommendedBooksList" class="recommended-list">
+        <p>Loading recommendations...</p>
+      </div>
+    </article>
+  </section>
 
+  <section class="trust-row" aria-label="BookFinder benefits">
+    <article>
+      <span>🔒</span>
+      <strong>Secure & Private</strong>
+      <p>Your library is linked to your own account.</p>
+    </article>
+
+    <article>
+      <span>☁️</span>
+      <strong>Always in Sync</strong>
+      <p>Access your saved books when logged in.</p>
+    </article>
+
+    <article>
+      <span>💡</span>
+      <strong>Smart Discovery</strong>
+      <p>Find books that match your interests.</p>
+    </article>
+
+    <article>
+      <span>♡</span>
+      <strong>Made for Readers</strong>
+      <p>Built to search, save and review.</p>
+    </article>
+  </section>
+
+</main>
+
+<footer class="bf-footer">
+  <div class="bf-footer-grid">
+    <div>
+      <picture>
+        <source srcset="images/logo.webp" type="image/webp">
+        <img src="images/logo.png" alt="BookFinder logo" width="180" height="46">
+      </picture>
+      <p>Your personal book discovery and library management app.</p>
+    </div>
+
+    <div>
+      <h2>Quick Links</h2>
+      <a href="search.php">Search Books</a>
+      <a href="my-books.php">My Books</a>
+      <a href="index.php">Home</a>
+    </div>
+
+    <div>
+      <h2>Support</h2>
+      <a href="login.php">Login</a>
+      <a href="signup.php">Sign Up</a>
+      <a href="logout.php">Logout</a>
+    </div>
+
+    <div>
+      <h2>Stay Connected</h2>
+      <p>Get updates and reading ideas.</p>
+      <form class="footer-form">
+        <label class="visually-hidden" for="footerEmail">Email address</label>
+        <input id="footerEmail" type="email" placeholder="Enter your email">
+        <button type="button">Subscribe</button>
+      </form>
+    </div>
+  </div>
+
+  <p class="footer-copy">© 2026 BookFinder. All rights reserved.</p>
+</footer>
+
+<script src="./js/script.js?v=10"></script>
 </body>
 </html>

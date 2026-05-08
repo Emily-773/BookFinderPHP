@@ -15,10 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const carouselPrev = document.getElementById("carouselPrev");
   const carouselNext = document.getElementById("carouselNext");
 
+  const recentlyViewedList = document.getElementById("recentlyViewedList");
+  const recommendedBooksList = document.getElementById("recommendedBooksList");
+
   const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
   const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
   const HISTORY_KEY = "bookfinder_history";
   const THEME_KEY = "bookfinder_theme";
+  const RECENTLY_VIEWED_KEY = "bookfinder_recently_viewed";
 
   let currentController = null;
   let suggestionIndex = -1;
@@ -42,15 +46,29 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 
+  function buildGoogleBooksUrl(query, maxResults = 10) {
+    const baseUrl = "https://www.googleapis.com/books/v1/volumes";
+    const params = new URLSearchParams({
+      q: query,
+      maxResults: String(maxResults)
+    });
+
+    if (API_KEY && API_KEY !== "YOUR_API_KEY_HERE") {
+      params.set("key", API_KEY);
+    }
+
+    return `${baseUrl}?${params.toString()}`;
+  }
+
   function applySavedTheme() {
     const savedTheme = localStorage.getItem(THEME_KEY);
 
     if (savedTheme === "dark") {
       document.body.classList.add("dark-mode");
-      if (darkModeToggle) darkModeToggle.textContent = "Light mode";
+      if (darkModeToggle) darkModeToggle.textContent = "☀️ Light mode";
     } else {
       document.body.classList.remove("dark-mode");
-      if (darkModeToggle) darkModeToggle.textContent = "Dark mode";
+      if (darkModeToggle) darkModeToggle.textContent = "🌙 Dark mode";
     }
   }
 
@@ -60,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
 
     if (darkModeToggle) {
-      darkModeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+      darkModeToggle.textContent = isDark ? "☀️ Light mode" : "🌙 Dark mode";
     }
   }
 
@@ -88,8 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5&key=${API_KEY}`;
-      const response = await fetch(url);
+      const response = await fetch(buildGoogleBooksUrl(query, 5));
       const data = await response.json();
       const items = data.items || [];
 
@@ -154,9 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showSpinner();
 
     try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=12&key=${API_KEY}`;
-
-      const response = await fetch(url, {
+      const response = await fetch(buildGoogleBooksUrl(query, 12), {
         signal: currentController.signal
       });
 
@@ -246,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const bookId = safeBookId(book);
 
       const title = info.title || "No title";
-      const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Unknown author";
+      const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Author not available";
       const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
       const description = info.description || "No description available.";
       const publishedDate = info.publishedDate || "Unknown";
@@ -289,6 +304,8 @@ document.addEventListener("DOMContentLoaded", () => {
       detailsBtn.textContent = "View Details";
 
       detailsBtn.addEventListener("click", () => {
+        saveRecentlyViewed({ title, authors, image, previewLink });
+
         showBookDetails({
           title,
           authors,
@@ -327,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showMessage(message) {
     if (!results) return;
-    results.innerHTML = `<p class="text-center">${escapeHtml(message)}</p>`;
+    results.innerHTML = `<p class="text-center w-100">${escapeHtml(message)}</p>`;
   }
 
   function showSpinner() {
@@ -394,6 +411,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function getRecentlyViewed() {
+    return JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY)) || [];
+  }
+
+  function saveRecentlyViewed(book) {
+    let viewed = getRecentlyViewed();
+
+    viewed = viewed.filter((item) => item.title.toLowerCase() !== book.title.toLowerCase());
+    viewed.unshift(book);
+    viewed = viewed.slice(0, 3);
+
+    localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(viewed));
+    renderRecentlyViewed();
+  }
+
+  function renderRecentlyViewed() {
+    if (!recentlyViewedList) return;
+
+    const viewed = getRecentlyViewed();
+
+    if (!viewed.length) {
+      recentlyViewedList.innerHTML = "<p>No recently viewed books yet.</p>";
+      return;
+    }
+
+    recentlyViewedList.innerHTML = viewed.map((book) => `
+      <div class="recently-viewed-item">
+        <img src="${escapeHtml(book.image)}" alt="Cover of ${escapeHtml(book.title)}" loading="lazy" width="46" height="64">
+        <div>
+          <h3>${escapeHtml(book.title)}</h3>
+          <p>${escapeHtml(book.authors)}</p>
+        </div>
+        <a href="${escapeHtml(book.previewLink || "search.php")}" target="_blank" rel="noopener noreferrer">View Book</a>
+      </div>
+    `).join("");
+  }
+
   function showBookDetails(book) {
     let modal = document.getElementById("bookDetailsModal");
 
@@ -443,8 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popularCarousel.innerHTML = "<p>Loading popular books...</p>";
 
     try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=bestseller+fiction&orderBy=relevance&maxResults=10&key=${API_KEY}`;
-      const response = await fetch(url);
+      const response = await fetch(buildGoogleBooksUrl("bestseller fiction", 10));
 
       if (!response.ok) {
         throw new Error("Could not load popular books.");
@@ -458,8 +511,9 @@ document.addEventListener("DOMContentLoaded", () => {
       books.forEach((book) => {
         const info = book.volumeInfo || {};
         const title = info.title || "No title";
-        const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Unknown author";
+        const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Author not available";
         const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
+        const category = Array.isArray(info.categories) ? info.categories[0] : "Fiction";
 
         const card = document.createElement("article");
         card.className = "carousel-book-card";
@@ -473,6 +527,7 @@ document.addEventListener("DOMContentLoaded", () => {
                height="190">
           <h3>${escapeHtml(title)}</h3>
           <p>${escapeHtml(authors)}</p>
+          <span class="book-category">${escapeHtml(category)}</span>
         `;
 
         popularCarousel.appendChild(card);
@@ -480,6 +535,48 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Carousel failed:", error);
       popularCarousel.innerHTML = "<p>Popular books could not be loaded. Please refresh the page.</p>";
+    }
+  }
+
+  async function loadRecommendedBooks() {
+    if (!recommendedBooksList) return;
+
+    recommendedBooksList.innerHTML = "<p>Loading recommendations...</p>";
+
+    try {
+      const response = await fetch(buildGoogleBooksUrl("self help biography fiction", 4));
+
+      if (!response.ok) {
+        throw new Error("Could not load recommendations.");
+      }
+
+      const data = await response.json();
+      const books = data.items || [];
+
+      if (!books.length) {
+        recommendedBooksList.innerHTML = "<p>No recommendations available.</p>";
+        return;
+      }
+
+      recommendedBooksList.innerHTML = books.map((book) => {
+        const info = book.volumeInfo || {};
+        const title = info.title || "No title";
+        const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Author not available";
+        const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
+        const category = Array.isArray(info.categories) ? info.categories[0] : "Book";
+
+        return `
+          <article class="recommended-card">
+            <img src="${escapeHtml(image)}" alt="Cover of ${escapeHtml(title)}" loading="lazy" width="120" height="155">
+            <h3>${escapeHtml(title)}</h3>
+            <p>${escapeHtml(authors)}</p>
+            <p>${escapeHtml(category)}</p>
+          </article>
+        `;
+      }).join("");
+    } catch (error) {
+      console.error("Recommendations failed:", error);
+      recommendedBooksList.innerHTML = "<p>Recommendations could not be loaded.</p>";
     }
   }
 
@@ -582,8 +679,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applySavedTheme();
   renderHistory();
-
-  if (popularCarousel) {
-    loadPopularBooks();
-  }
+  renderRecentlyViewed();
+  loadPopularBooks();
+  loadRecommendedBooks();
 });
