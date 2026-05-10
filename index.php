@@ -38,6 +38,7 @@ session_start();
       <a href="index.php" aria-current="page">🏠 Home</a>
 
       <?php if (isset($_SESSION['user_name'])): ?>
+        <a href="change-password.php">🔐 Change Password</a>
         <a href="logout.php">↪ Logout</a>
       <?php else: ?>
         <a href="login.php">Login</a>

@@ -2024,3 +2024,110 @@ body.dark-mode small,
 body.dark-mode .text-muted {
   color: #f3f4f6 !important;
 }
+
+/* =========================
+   Change Password / Auth Page
+========================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #f7f3ea 0%, #eaf4ff 100%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 560px;
+  background: #eef6ff;
+  border: 1px solid #c9d9e8;
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: 0 18px 45px rgba(8, 31, 61, 0.12);
+  text-align: center;
+}
+
+.auth-logo {
+  display: block;
+  margin: 0 auto 1rem;
+  max-width: 200px;
+  height: auto;
+}
+
+.auth-card h1 {
+  font-size: 2.4rem;
+  color: #0b2345;
+  margin-bottom: 1.5rem;
+}
+
+.auth-card form {
+  text-align: left;
+}
+
+.auth-card label {
+  display: block;
+  font-weight: 700;
+  color: #0b2345;
+  margin: 1rem 0 0.5rem;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #c8d6e5;
+  border-radius: 14px;
+  font-size: 1rem;
+  background: #f8fbff;
+}
+
+.auth-card input:focus {
+  outline: 3px solid #d4a62a;
+  border-color: #d4a62a;
+}
+
+.auth-card button {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 14px;
+  background: #1d2b4f;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.auth-card button:hover {
+  background: #0b2345;
+}
+
+.auth-card p {
+  margin-top: 1.5rem;
+}
+
+.auth-card a {
+  color: #0047cc;
+  font-weight: 600;
+}
+
+.auth-card .alert {
+  text-align: left;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-card .alert-success {
+  background: #d1f0dd;
+  border: 1px solid #9ed8b2;
+  color: #064d26;
+}
+
+.auth-card .alert-danger {
+  background: #ffe1e1;
+  border: 1px solid #e8a1a1;
+  color: #7a1111;
+}

@@ -50,11 +50,12 @@ function statusClass($status) {
     </a>
 
     <nav class="bf-nav" aria-label="Main navigation">
-      <a href="index.php">Home</a>
-      <a href="search.php">Search Books</a>
-      <a href="my-books.php" aria-current="page">My Books</a>
-      <a href="logout.php">Logout</a>
-    </nav>
+      <a href="index.php">🏠 Home</a>
+      <a href="search.php">🔍 Search Books</a>
+      <a href="my-books.php" aria-current="page">📖 My Books</a>
+      <a href="change-password.php">🔐 Change Password</a>
+      <a href="logout.php">↪ Logout</a>
+</nav>
   </div>
 </header>
 

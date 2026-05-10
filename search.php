@@ -33,10 +33,11 @@ if (!isset($_SESSION['user_id'])) {
 
     <nav class="bf-nav" aria-label="Main navigation">
       <span class="bf-user">Hi, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-      <a href="search.php" aria-current="page">🔍 Search Books</a>
-      <a href="my-books.php">📖 My Books</a>
-      <a href="index.php">🏠 Home</a>
-      <a href="logout.php">↪ Logout</a>
+     <a href="search.php" aria-current="page">🔍 Search Books</a>
+     <a href="my-books.php">📖 My Books</a>
+     <a href="index.php">🏠 Home</a>
+     <a href="change-password.php">🔐 Change Password</a>
+     <a href="logout.php">↪ Logout</a>
     </nav>
   </div>
 </header>
