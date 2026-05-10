@@ -93,9 +93,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Login</button>
-      </form>
+        </form>
 
-      <p id="loginMessage" class="mt-3 text-center" aria-live="polite">
+        <p class="mt-3 text-center">
+          <a href="forgot-password.php">Forgot your password?</a>
+        </p>
+
+        <p id="loginMessage" class="mt-3 text-center" aria-live="polite">
         <?php echo htmlspecialchars($message); ?>
       </p>
 
