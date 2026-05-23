@@ -1,129 +1,218 @@
 # 📚 BookFinder (PHP Version)
 
-BookFinder is a dynamic web application developed for the Advanced Web Development module. It allows users to search for books using the Google Books API and manage a personalised reading collection.
+BookFinder is a dynamic full-stack web application developed for the Advanced Web Development module at the University of Suffolk. The application allows users to search for books using the Google Books API, manage a personalised reading collection, write reviews, and track reading progress through a responsive and accessible interface.
 
 ---
 
 ## 🌐 Live Website
-
 🔗 https://erutherford.uosweb.co.uk/
 
 ---
 
 ## 💻 GitHub Repository
-
 🔗 https://github.com/Emily-773/BookFinderPHP
 
 ---
 
-## 🚀 Features
+# 🚀 Features
 
-### 🔐 User Authentication
+## 🔐 User Authentication & Account Management
 - Secure sign up, login, and logout system using PHP sessions
+- Passwords securely hashed using `password_hash()`
+- Forgot password and reset password functionality
+- Secure password reset emails sent using Brevo (Sendinblue) transactional email API
+- Token-based password reset validation with expiry protection
 
-### 🔍 Book Search
+---
+
+## 🔍 Google Books API Integration
 - Search for books using the Google Books API
-- Displays title, author, and cover image
-- Includes auto-suggestions for improved user experience
+- Displays:
+  - Book title
+  - Author(s)
+  - Publication date
+  - Categories
+  - Ratings
+  - Cover images
+  - Descriptions
+  - ISBN information
+- Dynamic book details page (`book.php`)
+- Preview books directly on Google Books
+- Placeholder image shown when no book cover is available
 
-### 🎯 Filtering & Sorting
-- Filter current search results by:
-  - Author
-  - Subject (e.g. fantasy, romance)
-- Sort results by:
-  - A–Z (title)
-  - Newest publication year
-  - Oldest publication year
-- Implemented client-side for performance optimisation
+---
 
-### 📖 My Books (CRUD Functionality)
-- Add books to a personal collection (Create)
-- View saved books (Read)
-- Update reading status (Update)
-- Remove books from collection (Delete)
+## 💡 Search Enhancements
+- Auto-suggestions while typing
+- Search history stored using `localStorage`
+- Recently viewed books tracking
+- Popular books carousel on homepage
+- Responsive search results modal popup
 
-### 🧠 Database Integration
-- MySQL database used to store users and saved books
-- Data managed using prepared statements for security
+---
 
-### 🌙 User Experience Enhancements
+## 🎯 Filtering & Sorting
+Filter current search results by:
+- Author
+- Subject/category
+
+Sort results by:
+- A–Z (title)
+- Newest publication year
+- Oldest publication year
+
+Implemented client-side using JavaScript for improved responsiveness.
+
+---
+
+## 📖 My Books (CRUD Functionality)
+Users can manage a personal reading collection:
+
+### CRUD Operations
+- **Create** — Save books to collection
+- **Read** — View saved books
+- **Update** — Change reading status
+- **Delete** — Remove books from collection
+
+### Reading Status Tracking
+- Want to Read
+- Reading
+- Finished
+
+---
+
+## ⭐ Review System (CRUD)
+Users can:
+- Add reviews
+- Edit reviews
+- Delete reviews
+- Submit star ratings and written feedback
+
+Reviews include:
+- Rating value
+- Written review text
+- Date and time submitted
+
+Review functionality is integrated into both:
+- `my-books.php`
+- `book.php`
+
+---
+
+## 🌙 Accessibility & User Experience
 - Dark mode toggle
-- Search history stored using localStorage
-- Responsive layout across devices
+- High contrast mode
+- Responsive design for desktop and mobile devices
+- Keyboard-accessible navigation
+- ARIA labels and semantic HTML
+- Accessible form labels and buttons
+- Mobile-friendly layouts and controls
 
 ---
 
-## 🛠️ Technologies Used
+# 🧠 Database Integration
+MySQL database used to store:
+- User accounts
+- Saved books
+- Reviews
+- Reading statuses
+- Password reset tokens
 
-- HTML5  
-- CSS3  
-- JavaScript (ES6)  
-- PHP  
-- MySQL  
-- Bootstrap 5  
-- Google Books API  
-
----
-
-## 🔒 Security & Best Practices
-
-- Passwords securely hashed using PHP `password_hash()`
-- Input validation and sanitisation applied
-- Prepared statements used to prevent SQL injection
-- Sessions used for secure authentication
+Security implemented using:
+- Prepared statements
+- Input sanitisation
+- Session management
 
 ---
 
-## ♿ Accessibility & Performance
-
-- Semantic HTML structure used
-- Form inputs include accessible labels
-- ARIA attributes used for dynamic content
-- Responsive design for mobile and desktop
-- Tested using Google Chrome Lighthouse:
-  - Performance: 90+  
-  - Accessibility: 95+  
-  - Best Practices: 100  
-  - SEO: 100  
+# 🛠️ Technologies Used
+- HTML5
+- CSS3
+- JavaScript (ES6)
+- PHP
+- MySQL
+- Bootstrap 5
+- Google Books API
+- Brevo API
 
 ---
 
-## 🧪 Testing
+# 🔒 Security & Best Practices
+- Password hashing using `password_hash()`
+- SQL injection prevention using prepared statements
+- Session-based authentication
+- Input validation and sanitisation
+- HTTPS enforcement via `.htaccess`
+- Content Security Policy (CSP) headers
+- Secure password reset workflow using email tokens
 
+---
+
+# ♿ Accessibility & Performance
+Accessibility features include:
+- Semantic HTML structure
+- ARIA attributes
+- Accessible labels
+- Keyboard navigation support
+- Responsive layouts
+- Dark mode and contrast mode
+
+Performance optimisations include:
+- WebP image optimisation
+- Responsive image handling
+- Deferred JavaScript loading
+- Browser caching via `.htaccess`
+- Lazy loading strategies for dynamic content
+
+Tested using Google Chrome Lighthouse:
+- Accessibility: 95+
+- Best Practices: 100
+- SEO: 90+
+- Performance improvements implemented throughout development
+
+---
+
+# 🧪 Testing
 The application has been tested for:
+- User authentication
+- Password reset functionality
+- Google Books API integration
+- Search suggestions
+- Filtering and sorting
+- CRUD operations
+- Review system functionality
+- Responsive design
+- Accessibility compliance
+- Error handling and validation
 
-- User authentication (login/signup/logout)
-- API integration and search functionality
-- Filtering and sorting behaviour
-- CRUD operations (add, update, delete books)
-- Form validation and error handling
-
-Full testing details are included in the submitted testing record.
-
----
-
-## 📄 Assignment Requirements Covered
-
-This project meets the requirements of the Advanced Web Development assignment:
-
-- ✅ Live web application deployed  
-- ✅ Front-end and back-end integration  
-- ✅ User authentication system  
-- ✅ CRUD operations with MySQL database  
-- ✅ Third-party API integration  
-- ✅ Responsive and accessible design  
-- ✅ Enhanced functionality (filtering, sorting, search history)
+Full testing details are included within the submitted testing documentation.
 
 ---
 
-## 📌 Notes
+# 📄 Assignment Requirements Covered
 
-- This project was developed as part of university coursework  
-- API key is restricted and not exposed publicly  
+This project meets the Advanced Web Development assignment requirements:
+
+✅ Live deployed web application  
+✅ Front-end and back-end integration  
+✅ User authentication system  
+✅ CRUD operations with MySQL database  
+✅ Third-party API integration  
+✅ Responsive and accessible design  
+✅ Enhanced functionality and user experience  
+✅ Secure password reset system  
+✅ Dynamic API-driven content  
+✅ Mobile-responsive layouts  
 
 ---
 
-## 👩‍💻 Author
+# 📌 Notes
+- This project was developed as part of university coursework.
+- API keys are restricted and not publicly exposed.
+- External data is retrieved dynamically from the Google Books API.
 
+---
+
+# 👩‍💻 Author
 Emily Rutherford  
 BSc Computer Science – University of Suffolk
