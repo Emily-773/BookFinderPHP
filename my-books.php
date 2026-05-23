@@ -31,11 +31,11 @@ function statusClass($status) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Books | BookFinder</title>
 
-  <meta name="description" content="View, update, delete and review your saved books in your personal BookFinder collection.">
+  <meta name="description" content="View, update and manage your saved books in your personal BookFinder collection.">
   <meta name="robots" content="index, follow">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css?v=14">
+  <link rel="stylesheet" href="./css/styles.css?v=18">
 </head>
 
 <body class="bookfinder-theme">
@@ -55,7 +55,7 @@ function statusClass($status) {
       <a href="my-books.php" aria-current="page">📖 My Books</a>
       <a href="change-password.php">🔐 Change Password</a>
       <a href="logout.php">↪ Logout</a>
-</nav>
+    </nav>
   </div>
 </header>
 
@@ -65,7 +65,7 @@ function statusClass($status) {
     <div>
       <p class="eyebrow">Your personal library</p>
       <h1>My Books</h1>
-      <p>Manage your saved books, update your reading status and add personal reviews.</p>
+      <p>Manage your saved books, update your reading status and open each book to view or add reviews.</p>
     </div>
 
     <div class="hero-actions">
@@ -94,6 +94,20 @@ function statusClass($status) {
   <?php if ($result->num_rows > 0): ?>
     <section class="books-grid" aria-label="Saved books">
       <?php while ($book = $result->fetch_assoc()): ?>
+
+        <?php
+        $summary_stmt = $conn->prepare("
+            SELECT rating, review_text
+            FROM book_reviews
+            WHERE book_id = ? AND user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        ");
+        $summary_stmt->bind_param("ii", $book['id'], $user_id);
+        $summary_stmt->execute();
+        $review_summary = $summary_stmt->get_result()->fetch_assoc();
+        ?>
+
         <article class="saved-book-card">
 
           <div class="book-cover-wrap">
@@ -130,103 +144,35 @@ function statusClass($status) {
               <button type="submit" class="btn btn-primary w-100 mt-2">Update Status</button>
             </form>
 
+            <?php if ($review_summary): ?>
+              <div class="review-summary">
+                <p class="review-summary-label">Your latest review</p>
+
+                <p class="stars" aria-label="<?php echo (int)$review_summary['rating']; ?> out of 5 stars">
+                  <?php
+                  $rating = (int)$review_summary['rating'];
+                  for ($i = 1; $i <= 5; $i++) {
+                      echo ($i <= $rating) ? "★" : "☆";
+                  }
+                  ?>
+                </p>
+
+                <p class="review-summary-text">
+                  “<?php echo htmlspecialchars(mb_strimwidth($review_summary['review_text'], 0, 80, '...')); ?>”
+                </p>
+              </div>
+            <?php else: ?>
+              <p class="no-review-text">No review added yet.</p>
+            <?php endif; ?>
+
+            <a href="book.php?id=<?php echo $book['id']; ?>" class="btn btn-warning w-100 mt-2">
+              View / Add Review
+            </a>
+
             <form action="delete-book.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this book?');">
               <input type="hidden" name="saved_book_id" value="<?php echo $book['id']; ?>">
-              <button type="submit" class="btn btn-outline-danger w-100">Delete Book</button>
+              <button type="submit" class="btn btn-outline-danger w-100 mt-2">Delete Book</button>
             </form>
-
-            <div class="review-panel">
-              <h3>Add a Review</h3>
-
-              <form action="add-review.php" method="POST">
-                <input type="hidden" name="book_id" value="<?php echo $book['id']; ?>">
-
-                <label for="rating-<?php echo $book['id']; ?>" class="form-label">Rating</label>
-                <select name="rating" id="rating-<?php echo $book['id']; ?>" class="form-select mb-2" required>
-                  <option value="">Choose rating</option>
-                  <option value="5">5 stars</option>
-                  <option value="4">4 stars</option>
-                  <option value="3">3 stars</option>
-                  <option value="2">2 stars</option>
-                  <option value="1">1 star</option>
-                </select>
-
-                <label for="review-<?php echo $book['id']; ?>" class="form-label">Review</label>
-                <textarea name="review_text"
-                          id="review-<?php echo $book['id']; ?>"
-                          class="form-control mb-2"
-                          rows="3"
-                          required></textarea>
-
-                <button type="submit" class="btn btn-warning w-100">Add Review</button>
-              </form>
-            </div>
-
-            <?php
-            $review_stmt = $conn->prepare("SELECT id, rating, review_text, created_at FROM book_reviews WHERE book_id = ? AND user_id = ? ORDER BY created_at DESC");
-            $review_stmt->bind_param("ii", $book['id'], $user_id);
-            $review_stmt->execute();
-            $reviews = $review_stmt->get_result();
-            ?>
-
-            <?php if ($reviews->num_rows > 0): ?>
-              <div class="user-reviews">
-                <h3>Your Reviews</h3>
-
-                <?php while ($review = $reviews->fetch_assoc()): ?>
-                  <div class="review-box">
-                    <p class="stars" aria-label="<?php echo (int)$review['rating']; ?> out of 5 stars">
-                      <?php
-                      $rating = (int)$review['rating'];
-                      for ($i = 1; $i <= 5; $i++) {
-                          echo ($i <= $rating) ? "★" : "☆";
-                      }
-                      ?>
-                    </p>
-
-                    <p><?php echo htmlspecialchars($review['review_text']); ?></p>
-
-                    <small>
-                      <?php echo date("d/m/Y H:i", strtotime($review['created_at'])); ?>
-                    </small>
-
-                    <button class="btn btn-outline-secondary w-100 mt-3 mb-2"
-                            onclick="this.nextElementSibling.style.display='block'; this.style.display='none'; return false;">
-                      Edit Review
-                    </button>
-
-                    <div style="display:none;">
-                      <form action="edit-review.php" method="POST">
-                        <input type="hidden" name="review_id" value="<?php echo $review['id']; ?>">
-
-                        <label for="edit-rating-<?php echo $review['id']; ?>" class="form-label">Edit rating</label>
-                        <select name="rating" id="edit-rating-<?php echo $review['id']; ?>" class="form-select mb-2" required>
-                          <option value="5" <?php if ($review['rating'] == 5) echo 'selected'; ?>>5 stars</option>
-                          <option value="4" <?php if ($review['rating'] == 4) echo 'selected'; ?>>4 stars</option>
-                          <option value="3" <?php if ($review['rating'] == 3) echo 'selected'; ?>>3 stars</option>
-                          <option value="2" <?php if ($review['rating'] == 2) echo 'selected'; ?>>2 stars</option>
-                          <option value="1" <?php if ($review['rating'] == 1) echo 'selected'; ?>>1 star</option>
-                        </select>
-
-                        <label for="edit-review-<?php echo $review['id']; ?>" class="form-label">Edit review</label>
-                        <textarea name="review_text"
-                                  id="edit-review-<?php echo $review['id']; ?>"
-                                  class="form-control mb-2"
-                                  rows="3"
-                                  required><?php echo htmlspecialchars($review['review_text']); ?></textarea>
-
-                        <button type="submit" class="btn btn-warning w-100 mb-2">Update Review</button>
-                      </form>
-                    </div>
-
-                    <form action="delete-review.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this review?');">
-                      <input type="hidden" name="review_id" value="<?php echo $review['id']; ?>">
-                      <button type="submit" class="btn btn-outline-danger w-100">Delete Review</button>
-                    </form>
-                  </div>
-                <?php endwhile; ?>
-              </div>
-            <?php endif; ?>
 
           </div>
         </article>

@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 $book_id = $_POST['book_id'] ?? '';
+$volume_id = $_POST['volume_id'] ?? $book_id;
+
 $title = trim($_POST['title'] ?? '');
 $authors = trim($_POST['authors'] ?? '');
 $thumbnail = trim($_POST['thumbnail'] ?? '');
@@ -19,7 +21,7 @@ if ($book_id === '' || $title === '') {
     die('Missing required book data.');
 }
 
-// Optional: prevent duplicate saves for same user + same Google book
+// Prevent duplicate saves for same user + same Google book
 $check = $conn->prepare("SELECT id FROM saved_books WHERE user_id = ? AND book_id = ?");
 $check->bind_param("is", $user_id, $book_id);
 $check->execute();
@@ -30,10 +32,25 @@ if ($result->num_rows > 0) {
     header("Location: my-books.php?message=already_saved");
     exit;
 }
+
 $check->close();
 
-$stmt = $conn->prepare("INSERT INTO saved_books (user_id, book_id, title, authors, thumbnail, status) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("isssss", $user_id, $book_id, $title, $authors, $thumbnail, $status);
+$stmt = $conn->prepare("
+    INSERT INTO saved_books 
+    (user_id, book_id, volume_id, title, authors, thumbnail, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+");
+
+$stmt->bind_param(
+    "issssss",
+    $user_id,
+    $book_id,
+    $volume_id,
+    $title,
+    $authors,
+    $thumbnail,
+    $status
+);
 
 if ($stmt->execute()) {
     header("Location: my-books.php?message=saved");

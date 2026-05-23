@@ -6,7 +6,7 @@ $message = "";
 $error = "";
 
 /* Brevo settings */
-$brevo_api_key = "Breevo_API_Key";
+$brevo_api_key = "";
 $sender_email = "ejrutherfordnew@gmail.com";
 $sender_name = "BookFinder";
 

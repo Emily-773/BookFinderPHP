@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const recentlyViewedList = document.getElementById("recentlyViewedList");
   const recommendedBooksList = document.getElementById("recommendedBooksList");
 
-  const API_KEY = "AIzaSyAbhpNuzreYrqOsU0u4nj75_NO5WohpKNE";
-  const FALLBACK_IMAGE = "https://via.placeholder.com/128x190?text=No+Cover";
+  const API_KEY = "";
+  const FALLBACK_IMAGE = "images/placeholder-book.webp";
   const HISTORY_KEY = "bookfinder_history";
   const THEME_KEY = "bookfinder_theme";
   const RECENTLY_VIEWED_KEY = "bookfinder_recently_viewed";
@@ -28,10 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
   let suggestionIndex = -1;
   let currentBooks = [];
 
-  function forceHttps(url) {
-    if (!url) return FALLBACK_IMAGE;
-    return url.replace(/^http:\/\//i, "https://");
+ function forceHttps(url) {
+
+  if (!url) {
+    return FALLBACK_IMAGE;
   }
+
+  // Keep local placeholder images unchanged
+  if (url.startsWith("images/")) {
+    return url;
+  }
+
+  return url.replace(/^http:\/\//i, "https://");
+}
 
   function safeBookId(book) {
     return book.id || `book-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
@@ -46,19 +55,19 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 
-  function buildGoogleBooksUrl(query, maxResults = 10) {
-    const baseUrl = "https://www.googleapis.com/books/v1/volumes";
-    const params = new URLSearchParams({
-      q: query,
-      maxResults: String(maxResults)
-    });
+function buildGoogleBooksUrl(query, maxResults = 10) {
 
-    if (API_KEY && API_KEY !== "YOUR_API_KEY_HERE") {
-      params.set("key", API_KEY);
-    }
+  const baseUrl =
+    "https://www.googleapis.com/books/v1/volumes";
 
-    return `${baseUrl}?${params.toString()}`;
-  }
+  const params = new URLSearchParams({
+    q: query,
+    maxResults: String(maxResults),
+    key: API_KEY
+  });
+
+  return `${baseUrl}?${params.toString()}`;
+}
 
   function applySavedTheme() {
     const savedTheme = localStorage.getItem(THEME_KEY);
@@ -81,6 +90,37 @@ document.addEventListener("DOMContentLoaded", () => {
       darkModeToggle.textContent = isDark ? "☀️ Light mode" : "🌙 Dark mode";
     }
   }
+
+const contrastToggle = document.getElementById("contrastToggle");
+
+if (contrastToggle) {
+
+  if (localStorage.getItem("contrastMode") === "enabled") {
+    document.body.classList.add("high-contrast");
+    contrastToggle.textContent = "🌗 Normal Contrast";
+  } else {
+    contrastToggle.textContent = "🌗 Contrast";
+  }
+
+  contrastToggle.addEventListener("click", function () {
+
+    document.body.classList.toggle("high-contrast");
+
+    if (document.body.classList.contains("high-contrast")) {
+
+      localStorage.setItem("contrastMode", "enabled");
+      contrastToggle.textContent = "🌗 Normal Contrast";
+
+    } else {
+
+      localStorage.setItem("contrastMode", "disabled");
+      contrastToggle.textContent = "🌗 Contrast";
+
+    }
+
+  });
+
+}
 
   function debounce(fn, delay = 300) {
     let timeout;
@@ -171,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showSpinner();
 
     try {
-      const response = await fetch(buildGoogleBooksUrl(query, 12), {
+      const response = await fetch(buildGoogleBooksUrl(query, 6), {
         signal: currentController.signal
       });
 
@@ -246,101 +286,209 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number.isNaN(year) ? 0 : year;
   }
 
-  function displayBooks(books) {
-    if (!results) return;
+  function getIsbn(info, type) {
+  const ids = info.industryIdentifiers || [];
+  const match = ids.find((item) => item.type === type);
+  return match ? match.identifier : "Not available";
+}
 
-    results.innerHTML = "";
+function formatCategories(info) {
+  return Array.isArray(info.categories)
+    ? info.categories.join(", ")
+    : "Not available";
+}
 
-    if (!books.length) {
-      showMessage("No books found.");
-      return;
-    }
+function displayBooks(books) {
+  if (!results) return;
 
-    books.forEach((book) => {
-      const info = book.volumeInfo || {};
-      const bookId = safeBookId(book);
+  results.innerHTML = "";
 
-      const title = info.title || "No title";
-      const authors = Array.isArray(info.authors) ? info.authors.join(", ") : "Author not available";
-      const image = forceHttps(info.imageLinks?.thumbnail || FALLBACK_IMAGE);
-      const description = info.description || "No description available.";
-      const publishedDate = info.publishedDate || "Unknown";
-      const publisher = info.publisher || "Unknown";
-      const previewLink = forceHttps(info.previewLink || "#");
+  if (!books.length) {
+    showMessage("No books found.");
+    return;
+  }
 
-      const col = document.createElement("div");
-      col.className = "col-md-3 mb-4";
+  books.forEach((book) => {
 
-      const card = document.createElement("div");
-      card.className = "card book-card h-100 shadow-sm";
+    const info = book.volumeInfo || {};
 
-      const img = document.createElement("img");
-      img.src = image;
-      img.className = "card-img-top";
-      img.alt = `Cover of ${title}`;
-      img.loading = "lazy";
-      img.decoding = "async";
-      img.width = 128;
-      img.height = 190;
+    const bookId = safeBookId(book);
+    const volumeId = book.id || bookId;
 
-      img.onerror = function () {
-        this.src = FALLBACK_IMAGE;
-      };
+    const title = info.title || "No title";
 
-      const cardBody = document.createElement("div");
-      cardBody.className = "card-body d-flex flex-column";
+    const authors = Array.isArray(info.authors)
+      ? info.authors.join(", ")
+      : "Author not available";
 
-      cardBody.innerHTML = `
-        <h6 class="card-title">${escapeHtml(title)}</h6>
-        <p class="card-text">${escapeHtml(authors)}</p>
-        <p class="card-text small text-muted">Published: ${escapeHtml(publishedDate)}</p>
-      `;
+    const image = forceHttps(
+      info.imageLinks?.thumbnail || FALLBACK_IMAGE
+    );
 
-      const buttonGroup = document.createElement("div");
-      buttonGroup.className = "mt-auto d-flex gap-2 flex-wrap";
+    const description =
+      info.description || "No description available.";
 
-      const detailsBtn = document.createElement("button");
-      detailsBtn.className = "btn btn-sm btn-outline-primary";
-      detailsBtn.textContent = "View Details";
+    const publishedDate =
+      info.publishedDate || "Unknown";
 
-      detailsBtn.addEventListener("click", () => {
-        saveRecentlyViewed({ title, authors, image, previewLink });
+    const publisher =
+      info.publisher || "Unknown";
 
-        showBookDetails({
-          title,
-          authors,
-          image,
-          description,
-          publishedDate,
-          publisher,
-          previewLink
-        });
+    const previewLink =
+      forceHttps(info.previewLink || "#");
+
+    const pageCount =
+      info.pageCount || "Not available";
+
+    const categories =
+      formatCategories(info);
+
+    const averageRating =
+      info.averageRating || "Not rated";
+
+    const ratingsCount =
+      info.ratingsCount || "0";
+
+    const language =
+      info.language
+        ? info.language.toUpperCase()
+        : "Not available";
+
+    const isbn10 =
+      getIsbn(info, "ISBN_10");
+
+    const isbn13 =
+      getIsbn(info, "ISBN_13");
+
+    const col = document.createElement("div");
+    col.className = "col-md-3 mb-4";
+
+    const card = document.createElement("div");
+    card.className = "card book-card h-100 shadow-sm";
+
+    const img = document.createElement("img");
+
+    img.src = image;
+    img.className = "card-img-top";
+    img.alt = `Cover of ${title}`;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.width = 128;
+    img.height = 190;
+
+    img.onerror = function () {
+      this.src = FALLBACK_IMAGE;
+    };
+
+    const cardBody = document.createElement("div");
+    cardBody.className = "card-body d-flex flex-column";
+
+    cardBody.innerHTML = `
+      <h6 class="card-title">${escapeHtml(title)}</h6>
+
+      <p class="card-text">
+        ${escapeHtml(authors)}
+      </p>
+
+      <p class="card-text small text-muted">
+        Published: ${escapeHtml(publishedDate)}
+      </p>
+
+      <p class="card-text small">
+        ⭐ ${escapeHtml(String(averageRating))}
+      </p>
+    `;
+
+    const buttonGroup = document.createElement("div");
+    buttonGroup.className =
+      "mt-auto d-flex gap-2 flex-wrap";
+
+    const detailsBtn = document.createElement("button");
+
+    detailsBtn.className =
+      "btn btn-sm btn-outline-primary";
+
+    detailsBtn.textContent = "View Details";
+
+    detailsBtn.addEventListener("click", () => {
+
+      saveRecentlyViewed({
+        title,
+        authors,
+        image,
+        previewLink
       });
 
-      const saveForm = document.createElement("form");
-      saveForm.method = "POST";
-      saveForm.action = "save-book.php";
-      saveForm.className = "d-inline";
+      showBookDetails({
+        title,
+        authors,
+        image,
+        description,
+        publishedDate,
+        publisher,
+        previewLink,
+        pageCount,
+        categories,
+        averageRating,
+        ratingsCount,
+        language,
+        isbn10,
+        isbn13
+      });
 
-      saveForm.innerHTML = `
-        <input type="hidden" name="book_id" value="${escapeHtml(bookId)}">
-        <input type="hidden" name="title" value="${escapeHtml(title)}">
-        <input type="hidden" name="authors" value="${escapeHtml(authors)}">
-        <input type="hidden" name="thumbnail" value="${escapeHtml(image)}">
-        <input type="hidden" name="status" value="Want to Read">
-        <button type="submit" class="btn btn-sm btn-outline-danger">Save Book</button>
-      `;
-
-      buttonGroup.appendChild(detailsBtn);
-      buttonGroup.appendChild(saveForm);
-
-      cardBody.appendChild(buttonGroup);
-      card.appendChild(img);
-      card.appendChild(cardBody);
-      col.appendChild(card);
-      results.appendChild(col);
     });
-  }
+
+    const saveForm = document.createElement("form");
+
+    saveForm.method = "POST";
+    saveForm.action = "save-book.php";
+    saveForm.className = "d-inline";
+
+    saveForm.innerHTML = `
+      <input type="hidden"
+             name="book_id"
+             value="${escapeHtml(bookId)}">
+
+      <input type="hidden"
+             name="volume_id"
+             value="${escapeHtml(volumeId)}">
+
+      <input type="hidden"
+             name="title"
+             value="${escapeHtml(title)}">
+
+      <input type="hidden"
+             name="authors"
+             value="${escapeHtml(authors)}">
+
+      <input type="hidden"
+             name="thumbnail"
+             value="${escapeHtml(image)}">
+
+      <input type="hidden"
+             name="status"
+             value="Want to Read">
+
+      <button type="submit"
+              class="btn btn-sm btn-outline-danger">
+        Save Book
+      </button>
+    `;
+
+    buttonGroup.appendChild(detailsBtn);
+    buttonGroup.appendChild(saveForm);
+
+    cardBody.appendChild(buttonGroup);
+
+    card.appendChild(img);
+    card.appendChild(cardBody);
+
+    col.appendChild(card);
+
+    results.appendChild(col);
+
+  });
+}
 
   function showMessage(message) {
     if (!results) return;
@@ -448,48 +596,121 @@ document.addEventListener("DOMContentLoaded", () => {
     `).join("");
   }
 
-  function showBookDetails(book) {
-    let modal = document.getElementById("bookDetailsModal");
+function showBookDetails(book) {
 
-    if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "bookDetailsModal";
-      modal.className = "book-modal-overlay";
-      document.body.appendChild(modal);
-    }
+  let modal =
+    document.getElementById("bookDetailsModal");
 
-    modal.innerHTML = `
-      <div class="book-modal-content">
-        <button class="book-modal-close" aria-label="Close book details">&times;</button>
-        <img src="${escapeHtml(book.image)}" alt="Cover of ${escapeHtml(book.title)}" width="128" height="190">
-        <h3>${escapeHtml(book.title)}</h3>
-        <p><strong>Author(s):</strong> ${escapeHtml(book.authors)}</p>
-        <p><strong>Publisher:</strong> ${escapeHtml(book.publisher)}</p>
-        <p><strong>Published:</strong> ${escapeHtml(book.publishedDate)}</p>
-        <p>${escapeHtml(book.description)}</p>
-        <a href="${escapeHtml(book.previewLink)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
-          Preview Book
-        </a>
-      </div>
-    `;
+  if (!modal) {
 
-    modal.style.display = "flex";
+    modal = document.createElement("div");
 
-    const closeBtn = modal.querySelector(".book-modal-close");
+    modal.id = "bookDetailsModal";
+    modal.className = "book-modal-overlay";
 
-    if (closeBtn) {
-      closeBtn.focus();
-      closeBtn.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-    }
+    document.body.appendChild(modal);
+  }
 
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.style.display = "none";
-      }
+  modal.innerHTML = `
+    <div class="book-modal-content">
+
+      <button class="book-modal-close"
+              aria-label="Close book details">
+        &times;
+      </button>
+
+      <img src="${escapeHtml(book.image)}"
+           alt="Cover of ${escapeHtml(book.title)}"
+           width="128"
+           height="190">
+
+      <h3>${escapeHtml(book.title)}</h3>
+
+      <p>
+        <strong>Author(s):</strong>
+        ${escapeHtml(book.authors)}
+      </p>
+
+      <p>
+        <strong>Publisher:</strong>
+        ${escapeHtml(book.publisher)}
+      </p>
+
+      <p>
+        <strong>Published:</strong>
+        ${escapeHtml(book.publishedDate)}
+      </p>
+
+      <p>
+        <strong>Pages:</strong>
+        ${escapeHtml(String(book.pageCount))}
+      </p>
+
+      <p>
+        <strong>Categories:</strong>
+        ${escapeHtml(book.categories)}
+      </p>
+
+      <p>
+        <strong>Language:</strong>
+        ${escapeHtml(book.language)}
+      </p>
+
+      <p>
+        <strong>ISBN 10:</strong>
+        ${escapeHtml(book.isbn10)}
+      </p>
+
+      <p>
+        <strong>ISBN 13:</strong>
+        ${escapeHtml(book.isbn13)}
+      </p>
+
+      <p>
+        <strong>Google Rating:</strong>
+        ⭐ ${escapeHtml(String(book.averageRating))}
+        / 5
+        (${escapeHtml(String(book.ratingsCount))} ratings)
+      </p>
+
+      <p>
+        ${escapeHtml(book.description)}
+      </p>
+
+      <a href="${escapeHtml(book.previewLink)}"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="btn btn-primary btn-sm">
+
+        Preview Book
+
+      </a>
+
+    </div>
+  `;
+
+  modal.style.display = "flex";
+
+  const closeBtn =
+    modal.querySelector(".book-modal-close");
+
+  if (closeBtn) {
+
+    closeBtn.focus();
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
     });
   }
+
+  modal.addEventListener("click", (e) => {
+
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+
+  });
+}
 
   async function loadPopularBooks() {
     if (!popularCarousel) return;
@@ -497,7 +718,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popularCarousel.innerHTML = "<p>Loading popular books...</p>";
 
     try {
-      const response = await fetch(buildGoogleBooksUrl("bestseller fiction", 10));
+      const response = await fetch(buildGoogleBooksUrl("bestseller fiction", 4));
 
       if (!response.ok) {
         throw new Error("Could not load popular books.");

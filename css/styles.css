@@ -2131,3 +2131,357 @@ body.dark-mode .text-muted {
   border: 1px solid #e8a1a1;
   color: #7a1111;
 }
+
+/* =========================
+   Book Details Page
+========================= */
+
+.book-details-layout {
+  max-width: 1100px;
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  align-items: start;
+}
+
+.book-details-layout .book-cover-wrap {
+  background: transparent;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.book-details-layout .book-cover-wrap img {
+  max-width: 190px;
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.book-details-layout .book-card-content {
+  padding: 2rem;
+}
+
+.book-details-layout .review-panel,
+.book-details-layout .user-reviews {
+  max-width: 720px;
+  margin-top: 1.5rem;
+}
+
+.book-details-layout .form-control,
+.book-details-layout .form-select {
+  width: 100%;
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .book-details-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .book-details-layout .book-cover-wrap {
+    padding: 1.5rem;
+  }
+
+  .book-details-layout .book-card-content {
+    padding: 1.5rem;
+  }
+}
+
+/* =========================
+   Review Summary on My Books
+========================= */
+
+.review-summary {
+  margin-top: 1rem;
+  padding: 0.85rem;
+  background: #fffaf0;
+  border-left: 4px solid #d39b24;
+  border-radius: 10px;
+}
+
+.review-summary-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #13213f;
+}
+
+.review-summary .stars {
+  color: #b8860b;
+  margin-bottom: 0.3rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.review-summary-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.no-review-text {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* =========================
+   FINAL FIX: Only Selected Gold Buttons
+========================= */
+
+:root {
+  --bf-gold: #946F00;
+  --bf-gold-hover: #755800;
+}
+
+/* ONLY these buttons should be gold */
+.btn-warning,
+.footer-form button,
+.bf-nav a:hover,
+.bf-nav a[aria-current="page"],
+.navbar .btn:hover,
+.carousel-btn:hover,
+.history-tags button:hover,
+.book-details-layout .btn-warning {
+  background: var(--bf-gold) !important;
+  border-color: var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+.btn-warning:hover,
+.footer-form button:hover,
+.book-details-layout .btn-warning:hover {
+  background: var(--bf-gold-hover) !important;
+  border-color: var(--bf-gold-hover) !important;
+  color: #ffffff !important;
+}
+
+/* Keep normal action buttons navy */
+.saved-book-card .btn-primary,
+.saved-book-card .btn-success,
+.saved-book-card button:not(.btn-warning):not(.btn-outline-danger) {
+  background: var(--bf-navy) !important;
+  border-color: var(--bf-navy) !important;
+  color: #ffffff !important;
+}
+
+/* Keep delete/remove buttons red outline */
+.saved-book-card .btn-outline-danger {
+  background: transparent !important;
+  color: var(--bf-danger) !important;
+  border-color: var(--bf-danger) !important;
+}
+
+.saved-book-card .btn-outline-danger:hover {
+  background: var(--bf-danger) !important;
+  color: #ffffff !important;
+}
+
+/* Theme + contrast toggle buttons */
+#themeToggle,
+#contrastToggle,
+.theme-toggle,
+.contrast-toggle {
+  background: var(--bf-navy) !important;
+  color: #ffffff !important;
+  border: 2px solid var(--bf-gold) !important;
+}
+
+/* Hover */
+#themeToggle:hover,
+#contrastToggle:hover,
+.theme-toggle:hover,
+.contrast-toggle:hover {
+  background: var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+/* Dark mode */
+body.dark-mode #themeToggle,
+body.dark-mode #contrastToggle,
+body.dark-mode .theme-toggle,
+body.dark-mode .contrast-toggle {
+  background: #111827 !important;
+  color: #ffffff !important;
+  border-color: var(--bf-gold) !important;
+}
+
+
+/* My Books cards should not stretch full width */
+.books-grid {
+  grid-template-columns: repeat(auto-fill, minmax(320px, 360px)) !important;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.saved-book-card {
+  max-width: 360px;
+  width: 100%;
+}
+
+/* Book details page: keep form buttons navy, not gold */
+.book-details-layout form button,
+.book-details-layout form .btn,
+.review-panel button,
+.review-panel .btn {
+  background: var(--bf-navy) !important;
+  border-color: var(--bf-navy) !important;
+  color: #ffffff !important;
+}
+
+.book-details-layout form button:hover,
+.book-details-layout form .btn:hover,
+.review-panel button:hover,
+.review-panel .btn:hover {
+  background: var(--bf-navy-dark) !important;
+  border-color: var(--bf-navy-dark) !important;
+  color: #ffffff !important;
+}
+
+/* Keep top page action buttons gold */
+.hero-actions .btn-warning,
+.hero-actions .bf-btn {
+  background: var(--bf-gold) !important;
+  border-color: var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+/* FORCE review page buttons to navy */
+.review-panel .btn,
+.review-panel button,
+.book-details-layout .btn-primary,
+.book-details-layout button[type="submit"] {
+  background: #1f2a44 !important;
+  border-color: #1f2a44 !important;
+  color: #ffffff !important;
+}
+
+.review-panel .btn:hover,
+.review-panel button:hover,
+.book-details-layout .btn-primary:hover,
+.book-details-layout button[type="submit"]:hover {
+  background: #151d31 !important;
+  border-color: #151d31 !important;
+  color: #ffffff !important;
+}
+
+/* Force dark mode / contrast buttons on search page */
+.search-bar-wrap > button:last-child,
+.filter-actions > button:last-child {
+  background: #1f2a44 !important;
+  border: 2px solid #946F00 !important;
+  color: #ffffff !important;
+  min-width: 120px;
+}
+
+body.dark-mode .search-bar-wrap > button:last-child,
+body.dark-mode .filter-actions > button:last-child {
+  background: #111827 !important;
+  border: 2px solid #946F00 !important;
+  color: #ffffff !important;
+}
+
+.search-bar-wrap > button:last-child:hover,
+.filter-actions > button:last-child:hover {
+  background: #946F00 !important;
+  color: #ffffff !important;
+}
+
+/* =========================
+   High Contrast Mode
+========================= */
+
+body.high-contrast {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast p,
+body.high-contrast a,
+body.high-contrast label,
+body.high-contrast small {
+  color: #ffffff !important;
+}
+
+body.high-contrast .card,
+body.high-contrast .auth-box,
+body.high-contrast .auth-card,
+body.high-contrast .search-hero,
+body.high-contrast .search-panel,
+body.high-contrast .saved-book-card,
+body.high-contrast .book-details-layout,
+body.high-contrast .review-panel,
+body.high-contrast .review-box,
+body.high-contrast .home-hero-upgrade,
+body.high-contrast .upgraded-panel,
+body.high-contrast .home-mini-panel {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffff00 !important;
+}
+
+body.high-contrast .btn,
+body.high-contrast button,
+body.high-contrast .bf-btn {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffff00 !important;
+}
+
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffff00 !important;
+}
+
+body.high-contrast a {
+  color: #ffff00 !important;
+  text-decoration: underline;
+}
+
+body.high-contrast *:focus {
+  outline: 4px solid #00ffff !important;
+  outline-offset: 3px !important;
+}
+
+/* Fix dark mode button turning white */
+#darkModeToggle {
+  background: var(--bf-navy) !important;
+  border: 2px solid var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+#darkModeToggle:hover {
+  background: var(--bf-gold) !important;
+  border-color: var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode #darkModeToggle {
+  background: #111827 !important;
+  border: 2px solid var(--bf-gold) !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast #darkModeToggle {
+  background: #ffff00 !important;
+  border: 3px solid #ffff00 !important;
+  color: #000000 !important;
+}
