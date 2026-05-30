@@ -17,7 +17,7 @@ if (!isset($_SESSION['user_id'])) {
 
   <link rel="preconnect" href="https://www.googleapis.com">
   <link rel="preconnect" href="https://books.google.com">
-  <link rel="stylesheet" href="./css/styles.css?v=19">
+  <link rel="stylesheet" href="css/styles.min.css?v=20">
 </head>
 
 <body>

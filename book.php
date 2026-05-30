@@ -52,7 +52,7 @@ $reviews = $review_stmt->get_result();
   <meta name="robots" content="index, follow">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css?v=20">
+  <link rel="stylesheet" href="css/styles.min.css?v=20">
 </head>
 
 <body class="bookfinder-theme">

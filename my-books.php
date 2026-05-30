@@ -35,7 +35,7 @@ function statusClass($status) {
   <meta name="robots" content="index, follow">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./css/styles.css?v=18">
+  <link rel="stylesheet" href="css/styles.min.css?v=20">
 </head>
 
 <body class="bookfinder-theme">
@@ -111,12 +111,25 @@ function statusClass($status) {
         <article class="saved-book-card">
 
           <div class="book-cover-wrap">
-            <?php if (!empty($book['thumbnail'])): ?>
-              <img src="<?php echo htmlspecialchars($book['thumbnail']); ?>"
-                   alt="Cover image for <?php echo htmlspecialchars($book['title']); ?>">
-            <?php else: ?>
-              <div class="missing-cover">No cover available</div>
-            <?php endif; ?>
+          <?php
+$thumbnail = !empty($book['thumbnail'])
+    ? str_replace('http://', 'https://', $book['thumbnail'])
+    : '';
+?>
+
+<?php if (!empty($thumbnail)): ?>
+  <img src="<?php echo htmlspecialchars($thumbnail); ?>"
+       alt="Cover image for <?php echo htmlspecialchars($book['title']); ?>"
+       width="200"
+       height="300"
+       loading="lazy">
+<?php else: ?>
+  <img src="images/placeholder-book.webp"
+       alt="No book cover available"
+       width="200"
+       height="300"
+       loading="lazy">
+<?php endif; ?>
           </div>
 
           <div class="book-card-content">
