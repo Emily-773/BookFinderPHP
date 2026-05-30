@@ -1,218 +1,166 @@
-# 📚 BookFinder (PHP Version)
+📚 BookFinder (PHP Version)
 
-BookFinder is a dynamic full-stack web application developed for the Advanced Web Development module at the University of Suffolk. The application allows users to search for books using the Google Books API, manage a personalised reading collection, write reviews, and track reading progress through a responsive and accessible interface.
+BookFinder is a dynamic web application developed for the Advanced Web Development module at the University of Suffolk. It allows users to search for books using the Google Books API, view detailed book information and descriptions, save books to a personal library, track reading progress, and write reviews.
 
----
+🌐 Live Website
 
-## 🌐 Live Website
-🔗 https://erutherford.uosweb.co.uk/
+https://erutherford.uosweb.co.uk/
 
----
+💻 GitHub Repository
 
-## 💻 GitHub Repository
-🔗 https://github.com/Emily-773/BookFinderPHP
+https://github.com/Emily-773/BookFinderPHP
 
----
+🚀 Features
+🔐 User Authentication
+User registration and login system
+Secure PHP session management
+Password hashing using PHP password_hash()
+Password reset functionality using Brevo email integration
+Logout functionality
+🔍 Google Books API Search
+Search books by title, author, or subject
+Real-time search suggestions
+Search history storage
+Filter and sort search results
+Detailed book information displayed in a pop-up modal
+Book descriptions retrieved from the Google Books API
+Google Books preview links
+📚 Personal Library
+Save books to a personal collection
+View saved books
+Delete books from the library
+Reading status tracking:
+Want to Read
+Currently Reading
+Completed
+⭐ Reviews and Ratings
+Add personal reviews
+Edit reviews
+Delete reviews
+Average rating calculations
+Review display on book details page
+📖 Book Details Page
 
-# 🚀 Features
+Displays:
 
-## 🔐 User Authentication & Account Management
-- Secure sign up, login, and logout system using PHP sessions
-- Passwords securely hashed using `password_hash()`
-- Forgot password and reset password functionality
-- Secure password reset emails sent using Brevo (Sendinblue) transactional email API
-- Token-based password reset validation with expiry protection
+Cover image
+Title
+Author
+Publisher
+Published date
+Categories
+ISBN-10
+ISBN-13
+Page count
+Language
+Full book description retrieved from the Google Books API
+Average rating
+Personal review information
+Reading status
+Google Books preview link
+🎨 User Experience Features
+Dark Mode
+High Contrast Mode
+Responsive Design
+Accessible navigation
+Keyboard-friendly controls
+Search history
+Recommended books section
+Fallback image for unavailable book covers
+⚡ Performance Optimisation
+Minified CSS
+Optimised images
+Browser caching
+Content Security Policy (CSP)
+HTTPS redirection
+Lighthouse optimisation
+🛡 Security Features
+Prepared SQL statements
+Password hashing
+Session-based authentication
+HTTPS enforcement
+Content Security Policy (CSP)
+Input sanitisation and validation
+Protection against SQL injection
+🛠 Technologies Used
+Front End
+HTML5
+CSS3
+JavaScript
+Back End
+PHP
+Database
+MySQL
+APIs
+Google Books API
+Brevo Email API
+📊 Lighthouse Scores
 
----
+Typical Lighthouse scores achieved after optimisation:
 
-## 🔍 Google Books API Integration
-- Search for books using the Google Books API
-- Displays:
-  - Book title
-  - Author(s)
-  - Publication date
-  - Categories
-  - Ratings
-  - Cover images
-  - Descriptions
-  - ISBN information
-- Dynamic book details page (`book.php`)
-- Preview books directly on Google Books
-- Placeholder image shown when no book cover is available
+Category	Score
+Performance	99–100
+Accessibility	100
+Best Practices	92–96
+SEO	100
+📂 Project Structure
 
----
+BookFinderPHP/
 
-## 💡 Search Enhancements
-- Auto-suggestions while typing
-- Search history stored using `localStorage`
-- Recently viewed books tracking
-- Popular books carousel on homepage
-- Responsive search results modal popup
+├── css/
 
----
+│ ├── styles.css
 
-## 🎯 Filtering & Sorting
-Filter current search results by:
-- Author
-- Subject/category
+│ └── styles.min.css
 
-Sort results by:
-- A–Z (title)
-- Newest publication year
-- Oldest publication year
+├── js/
 
-Implemented client-side using JavaScript for improved responsiveness.
+│ ├── script.js
 
----
+│ ├── auth.js
 
-## 📖 My Books (CRUD Functionality)
-Users can manage a personal reading collection:
+│ └── book-details.js
 
-### CRUD Operations
-- **Create** — Save books to collection
-- **Read** — View saved books
-- **Update** — Change reading status
-- **Delete** — Remove books from collection
+├── images/
 
-### Reading Status Tracking
-- Want to Read
-- Reading
-- Finished
+├── includes/
 
----
+├── index.php
 
-## ⭐ Review System (CRUD)
-Users can:
-- Add reviews
-- Edit reviews
-- Delete reviews
-- Submit star ratings and written feedback
+├── search.php
 
-Reviews include:
-- Rating value
-- Written review text
-- Date and time submitted
+├── my-books.php
 
-Review functionality is integrated into both:
-- `my-books.php`
-- `book.php`
+├── book.php
 
----
+├── login.php
 
-## 🌙 Accessibility & User Experience
-- Dark mode toggle
-- High contrast mode
-- Responsive design for desktop and mobile devices
-- Keyboard-accessible navigation
-- ARIA labels and semantic HTML
-- Accessible form labels and buttons
-- Mobile-friendly layouts and controls
+├── signup.php
 
----
+├── forgot-password.php
 
-# 🧠 Database Integration
-MySQL database used to store:
-- User accounts
-- Saved books
-- Reviews
-- Reading statuses
-- Password reset tokens
+├── reset-password.php
 
-Security implemented using:
-- Prepared statements
-- Input sanitisation
-- Session management
+└── README.md
 
----
+🎓 Academic Context
 
-# 🛠️ Technologies Used
-- HTML5
-- CSS3
-- JavaScript (ES6)
-- PHP
-- MySQL
-- Bootstrap 5
-- Google Books API
-- Brevo API
+This project was developed as part of the Advanced Web Development module for the BSc Computer Science programme at the University of Suffolk.
 
----
+The application demonstrates:
 
-# 🔒 Security & Best Practices
-- Password hashing using `password_hash()`
-- SQL injection prevention using prepared statements
-- Session-based authentication
-- Input validation and sanitisation
-- HTTPS enforcement via `.htaccess`
-- Content Security Policy (CSP) headers
-- Secure password reset workflow using email tokens
+API integration
+Database-driven development
+User authentication
+CRUD operations
+Responsive web design
+Accessibility best practices
+Web security implementation
+Performance optimisation
+👩‍💻 Author
 
----
+Emily Rutherford
 
-# ♿ Accessibility & Performance
-Accessibility features include:
-- Semantic HTML structure
-- ARIA attributes
-- Accessible labels
-- Keyboard navigation support
-- Responsive layouts
-- Dark mode and contrast mode
+BSc Computer Science
 
-Performance optimisations include:
-- WebP image optimisation
-- Responsive image handling
-- Deferred JavaScript loading
-- Browser caching via `.htaccess`
-- Lazy loading strategies for dynamic content
-
-Tested using Google Chrome Lighthouse:
-- Accessibility: 95+
-- Best Practices: 100
-- SEO: 90+
-- Performance improvements implemented throughout development
-
----
-
-# 🧪 Testing
-The application has been tested for:
-- User authentication
-- Password reset functionality
-- Google Books API integration
-- Search suggestions
-- Filtering and sorting
-- CRUD operations
-- Review system functionality
-- Responsive design
-- Accessibility compliance
-- Error handling and validation
-
-Full testing details are included within the submitted testing documentation.
-
----
-
-# 📄 Assignment Requirements Covered
-
-This project meets the Advanced Web Development assignment requirements:
-
-✅ Live deployed web application  
-✅ Front-end and back-end integration  
-✅ User authentication system  
-✅ CRUD operations with MySQL database  
-✅ Third-party API integration  
-✅ Responsive and accessible design  
-✅ Enhanced functionality and user experience  
-✅ Secure password reset system  
-✅ Dynamic API-driven content  
-✅ Mobile-responsive layouts  
-
----
-
-# 📌 Notes
-- This project was developed as part of university coursework.
-- API keys are restricted and not publicly exposed.
-- External data is retrieved dynamically from the Google Books API.
-
----
-
-# 👩‍💻 Author
-Emily Rutherford  
-BSc Computer Science – University of Suffolk
+University of Suffolk
